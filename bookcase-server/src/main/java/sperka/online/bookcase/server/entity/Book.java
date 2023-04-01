@@ -1,6 +1,7 @@
 package sperka.online.bookcase.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,51 +14,74 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "books")
-@SQLDelete(sql = "UPDATE books SET deleted = true WHERE id = ?", check = ResultCheckStyle.COUNT)
-@Where(clause = "deleted = false")
+@Table( name = "books" )
+@SQLDelete( sql = "UPDATE books SET deleted = true WHERE id = ?", check = ResultCheckStyle.COUNT )
 @Getter
 @Setter
 @NoArgsConstructor
-public class Book implements IdProvider {
+@AllArgsConstructor
+public class Book implements IdProvider, Comparable< BookDto > {
     @Id
-    @SequenceGenerator(name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(generator = "bookSeq")
+    @SequenceGenerator( name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1, initialValue = 1 )
+    @GeneratedValue( generator = "bookSeq" )
     private Long id;
 
     private String author;
 
     private String title;
 
-    @Column(name = "date")
+    @Column( name = "date" )
     private String placeAndYear;
 
     private String signature;
 
-    @CreationTimestamp
-    @Column(name = "create_date")
+    @Column( name = "create_date" )
     private Instant createDate;
 
-    @UpdateTimestamp
-    @Column(name = "modify_date")
+    @Column( name = "modify_date" )
     private Instant modifyDate;
 
-    @Column(columnDefinition = "boolean default false")
+    @Column( columnDefinition = "boolean default false" )
     @JsonIgnore
     private Boolean deleted;
 
-    public BookDto toDto()
-    {
+    public BookDto toDto() {
         BookDto dto = new BookDto();
 
-        dto.setRemoteId(id);
-        dto.setAuthor(author);
-        dto.setCreateDate(createDate);
-        dto.setModifyDate(modifyDate);
-        dto.setTitle(title);
-        dto.setSignature(signature);
-        dto.setPlaceAndYear(placeAndYear);
+        dto.setRemoteId( id );
+        dto.setAuthor( author );
+        dto.setCreateDate( createDate );
+        dto.setModifyDate( modifyDate );
+        dto.setTitle( title );
+        dto.setSignature( signature );
+        dto.setPlaceAndYear( placeAndYear );
+        dto.setDeleted( deleted );
 
         return dto;
+    }
+
+    public void fromDto( BookDto dto ) {
+        author = dto.getAuthor();
+        createDate = dto.getCreateDate();
+        modifyDate = dto.getModifyDate();
+        title = dto.getTitle();
+        signature = dto.getSignature();
+        placeAndYear = dto.getPlaceAndYear();
+        deleted = dto.getDeleted();
+    }
+
+    @Override
+    public int compareTo( BookDto dto ) {
+        if ( dto.getModifyDate().equals( getModifyDate() ) ) {
+            var same = dto.getAuthor().equals( getAuthor() )
+                    && dto.getPlaceAndYear().equals( getPlaceAndYear() )
+                    && dto.getDeleted().equals( getDeleted() )
+                    && dto.getSignature().equals( getSignature() )
+                    && dto.getTitle().equals( getTitle() )
+                    && dto.getRemoteId().equals( getId() );
+            return same ? 0 : 1;
+        } else {
+            return dto.getModifyDate().compareTo( getModifyDate() );
+        }
     }
 }

@@ -15,7 +15,7 @@
     <bytecodeTargetLevel>
       <module name="bookcase" target="11" />
       <module name="bookcase-commons" target="11" />
-      <module name="bookcase-desktop" target="11" />
+      <module name="bookcase-desktop" target="17" />
       <module name="bookcase-server" target="11" />
     </bytecodeTargetLevel>
   </component>

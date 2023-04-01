@@ -28,6 +28,12 @@ public class BookRepositoryImpl extends BasicRepositoryImpl<Book> implements Boo
     }
 
     @Override
+    public List<Book> getModifiedAfter(Instant date) {
+        return entityManager.createQuery("select b from Book b where b.modifyDate > :date", Book.class)
+                .setParameter("date", date).getResultList();
+    }
+
+    @Override
     public Book getLastModified() {
         TypedQuery<Book> query = entityManager
                 .createQuery("select b from Book b order by b.modifyDate desc", Book.class);

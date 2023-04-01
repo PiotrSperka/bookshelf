@@ -85,7 +85,6 @@ public class BooksResource {
     @POST
     @Path("/sync")
     public List<BookDto> syncStart(List<BookDto> books) {
-        return bookDatabaseSynchronizationService.synchronize(books).stream().map(Book::toDto)
-                .collect(Collectors.toList());
+        return bookDatabaseSynchronizationService.synchronize(books, null); // TODO
     }
 }
