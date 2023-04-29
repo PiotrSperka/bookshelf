@@ -16,7 +16,7 @@ public class BookDto {
     private Long remoteId;
     private String author;
     private String title;
-    private String placeAndYear;
+    private String released;
     private String signature;
     private Instant createDate;
     private Instant modifyDate;
@@ -29,7 +29,7 @@ public class BookDto {
                 ", remoteId=" + remoteId +
                 ", author='" + author + '\'' +
                 ", title='" + title + '\'' +
-                ", placeAndYear='" + placeAndYear + '\'' +
+                ", released='" + released + '\'' +
                 ", signature='" + signature + '\'' +
                 ", createDate=" + createDate +
                 ", modifyDate=" + modifyDate +

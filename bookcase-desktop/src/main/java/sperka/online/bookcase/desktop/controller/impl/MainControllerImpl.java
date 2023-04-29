@@ -194,6 +194,9 @@ public class MainControllerImpl implements MainController, Initializable, OnShow
 
     // TODO: SYNC FROM DESKTOP TO SERVER ON ACTION OR TIMER
     // TODO: Get (on timer) last modify date from server == heartbeat + if sync needed
+    // TODO: Settings - save and load settings
+    // TODO: Operation without server, server status in bar
+    // TODO: Remove unused method, endpoints, classes
     private void deleteSelectedBook() {
         var deleted = new AtomicBoolean( false );
         tvBooks.getSelectionModel().getSelectedItems().forEach( b -> {

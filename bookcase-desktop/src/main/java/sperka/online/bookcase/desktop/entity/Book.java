@@ -57,7 +57,7 @@ public class Book implements IdProvider {
         dto.setModifyDate( modifyDate );
         dto.setTitle( title );
         dto.setSignature( signature );
-        dto.setPlaceAndYear( placeAndYear );
+        dto.setReleased( placeAndYear );
         dto.setDeleted( deleted );
 
         return dto;
@@ -73,7 +73,7 @@ public class Book implements IdProvider {
         book.setCreateDate( dto.getCreateDate() );
         book.setModifyDate( dto.getModifyDate() );
         book.setTitle( dto.getTitle() );
-        book.setPlaceAndYear( dto.getPlaceAndYear() );
+        book.setPlaceAndYear( dto.getReleased() );
         book.setSignature( dto.getSignature() );
 
         return book;

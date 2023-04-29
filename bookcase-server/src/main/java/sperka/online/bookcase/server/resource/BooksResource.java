@@ -1,59 +1,75 @@
 package sperka.online.bookcase.server.resource;
 
-import org.jboss.logging.Logger;
 import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.auth.Roles;
+import sperka.online.bookcase.server.dto.BookFilterDto;
 import sperka.online.bookcase.server.entity.Book;
 import sperka.online.bookcase.server.helpers.InstantParam;
 import sperka.online.bookcase.server.repository.BookRepository;
 import sperka.online.bookcase.server.service.BookDatabaseSynchronizationService;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-@Path("/books")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Path( "/books" )
+@Produces( MediaType.APPLICATION_JSON )
+@Consumes( MediaType.APPLICATION_JSON )
+@RolesAllowed( { Roles.ADMIN, Roles.USER } )
 public class BooksResource {
-    private static final Logger LOG = Logger.getLogger(BooksResource.class);
     private final BookRepository bookRepository;
     private final BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
 
     @Inject
-    public BooksResource(BookRepository bookRepository, BookDatabaseSynchronizationService bookDatabaseSynchronizationService) {
+    public BooksResource( BookRepository bookRepository, BookDatabaseSynchronizationService bookDatabaseSynchronizationService ) {
         this.bookRepository = bookRepository;
         this.bookDatabaseSynchronizationService = bookDatabaseSynchronizationService;
     }
 
     @GET
-    @Path("/all")
-    public List<BookDto> list() {
-        return bookRepository.getAll().stream().map(Book::toDto).collect(Collectors.toList());
+    @Path( "/all" )
+    public List< BookDto > list() {
+        return bookRepository.getAll().stream().map( Book::toDto ).collect( Collectors.toList() );
+    }
+
+    @POST
+    @Path( "/page/{page}/{perPage}" )
+    public List< BookDto > page( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
+        return bookRepository.getPaginated( page, perPage, filters ).stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @GET
-    @Path("/id/{id}")
-    public BookDto byId(@PathParam("id") Long id) {
-        Book book = bookRepository.getById(id);
+    @Path( "/count" )
+    public Long count() {
+        return bookRepository.getCountNotDeleted();
+    }
+
+    @POST
+    @Path( "/count" )
+    public Long count( BookFilterDto filters ) {
+        return bookRepository.getCountFiltered( filters );
+    }
+
+    @GET
+    @Path( "/id/{id}" )
+    public BookDto byId( @PathParam( "id" ) Long id ) {
+        Book book = bookRepository.getById( id );
         return (book != null) ? book.toDto() : null;
     }
 
     @GET
-    @Path("/after/{date}")
-    public List<BookDto> afterDate(@PathParam("date") InstantParam date) {
-        return bookRepository.getCreatedAfter(date.getInstant()).stream().map(Book::toDto).collect(Collectors.toList());
+    @Path( "/after/{date}" )
+    public List< BookDto > afterDate( @PathParam( "date" ) InstantParam date ) {
+        return bookRepository.getCreatedAfter( date.getInstant() ).stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @GET
-    @Path("/last")
+    @Path( "/last" )
     public BookDto last() {
         Book book = bookRepository.getLastModified();
         return (book != null) ? book.toDto() : null;
@@ -83,8 +99,8 @@ public class BooksResource {
 //    }
 
     @POST
-    @Path("/sync")
-    public List<BookDto> syncStart(List<BookDto> books) {
-        return bookDatabaseSynchronizationService.synchronize(books, null); // TODO
+    @Path( "/sync" )
+    public List< BookDto > syncStart( List< BookDto > books ) {
+        return bookDatabaseSynchronizationService.synchronize( books, null ); // TODO
     }
 }

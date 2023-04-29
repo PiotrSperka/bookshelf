@@ -30,8 +30,7 @@ public class Book implements IdProvider, Comparable< BookDto > {
 
     private String title;
 
-    @Column( name = "date" )
-    private String placeAndYear;
+    private String released;
 
     private String signature;
 
@@ -54,7 +53,7 @@ public class Book implements IdProvider, Comparable< BookDto > {
         dto.setModifyDate( modifyDate );
         dto.setTitle( title );
         dto.setSignature( signature );
-        dto.setPlaceAndYear( placeAndYear );
+        dto.setReleased( released );
         dto.setDeleted( deleted );
 
         return dto;
@@ -66,7 +65,7 @@ public class Book implements IdProvider, Comparable< BookDto > {
         modifyDate = dto.getModifyDate();
         title = dto.getTitle();
         signature = dto.getSignature();
-        placeAndYear = dto.getPlaceAndYear();
+        released = dto.getReleased();
         deleted = dto.getDeleted();
     }
 
@@ -74,7 +73,7 @@ public class Book implements IdProvider, Comparable< BookDto > {
     public int compareTo( BookDto dto ) {
         if ( dto.getModifyDate().equals( getModifyDate() ) ) {
             var same = dto.getAuthor().equals( getAuthor() )
-                    && dto.getPlaceAndYear().equals( getPlaceAndYear() )
+                    && dto.getReleased().equals( getReleased() )
                     && dto.getDeleted().equals( getDeleted() )
                     && dto.getSignature().equals( getSignature() )
                     && dto.getTitle().equals( getTitle() )

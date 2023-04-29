@@ -106,3 +106,5 @@ replay_pid*
 /BOOKCASE_DB_PUBLIC_BOOKS.sql
 *.db
 */target/**
+/old books insert.sql
+/old books.sql

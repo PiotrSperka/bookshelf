@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/bookcase.iml" filepath="$PROJECT_DIR$/bookcase.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bookcase-commons/bookcase-commons.iml" filepath="$PROJECT_DIR$/bookcase-commons/bookcase-commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/bookcase-desktop/bookcase-desktop.iml" filepath="$PROJECT_DIR$/bookcase-desktop/bookcase-desktop.iml" />
       <module fileurl="file://$PROJECT_DIR$/bookcase-server/bookcase-server.iml" filepath="$PROJECT_DIR$/bookcase-server/bookcase-server.iml" />
     </modules>
