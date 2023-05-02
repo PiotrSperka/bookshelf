@@ -1,6 +1,6 @@
 package sperka.online.bookcase.server.resource;
 
-import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.dto.BookDto;
 import sperka.online.bookcase.server.helpers.InstantParam;
 import sperka.online.bookcase.server.service.BookDatabaseSynchronizationService;
 
@@ -24,7 +24,7 @@ public class SynchronizationResource {
 
     @POST
     @Path( "/{lastSyncTime}" )
-    public List< BookDto > synchronize( List< BookDto > books, @PathParam( "lastSyncTime" ) InstantParam lastSyncTime ) {
+    public List<BookDto> synchronize(List< BookDto > books, @PathParam( "lastSyncTime" ) InstantParam lastSyncTime ) {
         return bookDatabaseSynchronizationService.synchronize( books, lastSyncTime.getInstant() );
     }
 }

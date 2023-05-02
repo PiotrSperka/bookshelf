@@ -21,3 +21,7 @@
 .form .submitButton.MuiButtonBase-root {
     margin-top: 50px;
 }
+
+.closeButton.MuiButtonBase-root {
+    margin-top: 10px;
+}

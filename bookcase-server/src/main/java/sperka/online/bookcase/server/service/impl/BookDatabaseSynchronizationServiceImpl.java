@@ -1,7 +1,7 @@
 package sperka.online.bookcase.server.service.impl;
 
 import org.jboss.logging.Logger;
-import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.dto.BookDto;
 import sperka.online.bookcase.server.entity.Book;
 import sperka.online.bookcase.server.repository.BookRepository;
 import sperka.online.bookcase.server.service.BookDatabaseSynchronizationService;

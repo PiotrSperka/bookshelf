@@ -10,12 +10,57 @@ const getHeaders = (userContext) => {
     }
 }
 
+const useApi = () => {
+    const {user, logout, isLoggedIn} = useUserContext();
+    const [data, setData] = useState(null);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const request = async (parameters) => {
+        setLoading(true);
+        setError("");
+        fetch(parameters.url, {
+            method: parameters.method,
+            headers: getHeaders(user),
+            body: (parameters.data) ? JSON.stringify(parameters.data) : null
+        }).then(result => {
+            if (result.status === 401) {
+                if (isLoggedIn()) {
+                    logout() // clear token, as it is invalid now
+                }
+            } else if (result.ok) {
+                setData(result);
+            } else {
+                setError(result.statusText || "Unexpected Error!");
+            }
+        }).catch(err => {
+            setError(err.message || "Unexpected Error!");
+        }).finally(() => {
+            setLoading(false);
+        });
+    };
+
+    const reset = () => {
+        setData(null);
+        setError("");
+        setLoading(false);
+    }
+
+    return {
+        data,
+        error,
+        loading,
+        request,
+        reset
+    };
+};
+
 const useReceive = (url, method, data) => {
     const {user, logout, isLoggedIn} = useUserContext();
     const [res, setRes] = useState(null);
     const [ready, setReady] = useState(false);
 
-    const fetchData = useCallback( async () => {
+    const fetchData = useCallback(async () => {
         setReady(false);
         const response = await fetch(url, {
             method: method,
@@ -31,7 +76,7 @@ const useReceive = (url, method, data) => {
             setRes(response);
             setReady(true);
         }
-    }, [data, isLoggedIn, logout, method, url, user] );
+    }, [data, isLoggedIn, logout, method, url, user]);
 
     useEffect(() => {
         fetchData();
@@ -48,4 +93,4 @@ const usePostRequest = (url, data) => {
     return useReceive(url, "POST", data);
 }
 
-export {useGetRequest, usePostRequest};
+export {useGetRequest, usePostRequest, useApi};

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.*;
-import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.dto.BookDto;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -20,7 +20,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book implements IdProvider, Comparable< BookDto > {
+public class Book implements IdProvider, Comparable<BookDto> {
     @Id
     @SequenceGenerator( name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1, initialValue = 1 )
     @GeneratedValue( generator = "bookSeq" )

@@ -1,6 +1,6 @@
 package sperka.online.bookcase.server.repository;
 
-import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.dto.BookDto;
 import sperka.online.bookcase.server.dto.BookFilterDto;
 import sperka.online.bookcase.server.entity.Book;
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import sperka.online.bookcase.commons.dto.BookDto;
+import sperka.online.bookcase.server.dto.BookDto;
 import sperka.online.bookcase.server.entity.Book;
 import sperka.online.bookcase.server.repository.BookRepository;
 
@@ -40,7 +40,7 @@ public class BookDatabaseSynchronizationServiceTest {
         return books;
     }
 
-    private List< BookDto > GetDesktopBooks() {
+    private List<BookDto> GetDesktopBooks() {
         var books = new ArrayList< BookDto >();
 
         books.add( new BookDto( 24L, null, "Author One", "Title one", "Berlin, 2022", "A/II/34", Instant.now(), Instant.now(), false ) );

@@ -4,6 +4,8 @@ import {useEffect, useState} from "react";
 import {useGetBooksPage, useGetBooksCount} from "../Services/BooksServiceHook";
 import BookFilters from "./BookFilters";
 import {Box, Button} from "@mui/material";
+import AddEditBook from "./AddEditBook";
+import DeleteBook from "./DeleteBook";
 
 const BookGrid = () => {
     const [books, setBooks] = useState([]);
@@ -19,9 +21,13 @@ const BookGrid = () => {
     const [paginationModel, setPaginationModel] = useState({page: 0, pageSize: 15});
     const [rowCountState, setRowCountState] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [filters, setFilters] = useState({});
+    const [filters, setFilters] = useState({sortField: "author", sortDirection: "asc"});
     const [bookCount, bookCountReady, fetchCount] = useGetBooksCount(filters);
     const [bookPage, bookPageReady, fetchPage] = useGetBooksPage(paginationModel.page, paginationModel.pageSize, filters);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedBookId, setSelectedBookId] = useState(null);
 
     useEffect(() => {
         if (bookCount) {
@@ -63,17 +69,49 @@ const BookGrid = () => {
         }
     }
 
+    const rowSelectionChanged = model => {
+        if (model.length > 0) {
+            setSelectedBookId(model[0]);
+        } else {
+            setSelectedBookId(null);
+        }
+    }
+
+    const handleBooksChanged = refresh => {
+        setAddDialogOpen(false);
+        setEditDialogOpen(false);
+        setDeleteDialogOpen(false);
+        if (refresh === true) {
+            fetchCount();
+            fetchPage();
+        }
+    }
+
     return (<div className={"main"}>
+        <AddEditBook open={addDialogOpen} bookId={null} onClose={handleBooksChanged}/>
+        <AddEditBook open={editDialogOpen} bookId={selectedBookId} onClose={handleBooksChanged}/>
+        <DeleteBook open={deleteDialogOpen} bookId={selectedBookId} onClose={handleBooksChanged} />
         <Box style={{"padding-bottom": "10px"}}>
-            <Button className={"button"} variant={"contained"}>Add</Button>
-            <Button className={"button"} variant={"outlined"}>Edit</Button>
-            <Button className={"button"} variant={"outlined"}>Delete</Button>
+            <Button className={"button"} variant={"contained"} onClick={() => {
+                setAddDialogOpen(true);
+            }}>Add</Button>
+            <Button className={"button"} variant={"outlined"} disabled={selectedBookId === null} onClick={() => {
+                setEditDialogOpen(true);
+            }}>Edit</Button>
+            <Button className={"button"} variant={"outlined"} disabled={selectedBookId === null} onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
             <Button className={"button"} variant={"outlined"}>Refresh</Button>
         </Box>
         <BookFilters onFilterChanged={filterChanged}/>
         <DataGrid className={"dataGrid"} columns={cols} rows={books} autoHeight="true" rowCount={rowCountState}
+                  initialState={{
+                      sorting: {
+                          sortModel: [{field: 'author', sort: 'asc'}],
+                      },
+                  }}
                   pageSizeOptions={[15]}
                   loading={isLoading}
+                  disableMultipleRowSelection={true}
+                  onRowSelectionModelChange={rowSelectionChanged}
                   paginationModel={paginationModel}
                   paginationMode="server"
                   onPaginationModelChange={setPaginationModel}
