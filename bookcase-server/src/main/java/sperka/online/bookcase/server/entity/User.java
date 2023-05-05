@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table( name = "users" )
@@ -24,10 +25,12 @@ public class User implements IdProvider {
     private Long id;
 
     @Username
+    @NotNull
     private String name;
 
     @Column( name = "passwd" )
     @Password
+    @NotNull
     private String password;
 
     @Roles

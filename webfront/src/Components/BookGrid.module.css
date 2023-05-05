@@ -1,6 +1,5 @@
 .main {
     margin: 20px;
-    height: auto;
     overflow: auto;
     display: flex;
     flex-direction: column;

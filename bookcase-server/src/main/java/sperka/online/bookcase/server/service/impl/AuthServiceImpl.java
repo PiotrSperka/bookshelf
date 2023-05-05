@@ -2,6 +2,7 @@ package sperka.online.bookcase.server.service.impl;
 
 import io.jsonwebtoken.Jwts;
 import sperka.online.bookcase.server.auth.SigningKey;
+import sperka.online.bookcase.server.dto.UserInfoDto;
 import sperka.online.bookcase.server.entity.User;
 import sperka.online.bookcase.server.repository.UserRepository;
 import sperka.online.bookcase.server.service.AuthService;
@@ -11,7 +12,9 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AuthServiceImpl implements AuthService {
@@ -23,8 +26,42 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public boolean initializeUsers() {
+        if ( countUsers() > 0 ) {
+            return false;
+        }
+
+        createUser( "user", "user", Collections.singletonList( "user" ) );
+        createUser( "admin", "admin", Collections.singletonList( "admin" ) );
+
+        return true;
+    }
+
+    @Override
+    public List< UserInfoDto > getAll() {
+        return userRepository.getAll().stream().map( UserInfoDto::fromEntity ).collect( Collectors.toList() );
+    }
+
+    @Override
+    public UserInfoDto get( Long id ) {
+        var user = userRepository.getById( id );
+        return user != null ? UserInfoDto.fromEntity( user ) : null;
+    }
+
+    @Override
+    public UserInfoDto getByUsername( String username ) {
+        var user = userRepository.getUserByUsername( username );
+        return user != null ? UserInfoDto.fromEntity( user ) : null;
+    }
+
+    @Override
+    public long countUsers() {
+        return userRepository.countAll();
+    }
+
+    @Override
     @Transactional
-    public boolean createUser( String username, String password, String roles ) {
+    public boolean createUser( String username, String password, List< String > roles ) {
         User user = null;
         try {
             user = userRepository.getUserByUsername( username );
@@ -32,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if ( user == null ) {
-            userRepository.save( User.create( username, password, roles ) );
+            userRepository.save( User.create( username, password, String.join( ",", roles ) ) );
             return true;
         }
 
@@ -61,6 +98,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public boolean modifyPassword( String username, String oldPassword, String newPassword ) {
         if ( username == null || oldPassword == null || newPassword == null ) {
             return false;
@@ -83,18 +121,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean modifyUser( String username, String password, List< String > roles ) {
-        if ( username == null ) {
+    @Transactional
+    public boolean modifyUser( Long id, String username, String password, List< String > roles ) {
+        if ( id == null ) {
             return false;
         }
 
-        var user = userRepository.getUserByUsername( username );
+        var user = userRepository.getById( id );
         if ( user != null ) {
             if ( password != null && password.length() > 4 ) {
                 user.setPassword( password );
             }
-            if ( roles != null && roles.size() > 0 ) {
-                user.setRoles( String.join( "", roles ) );
+            if ( roles != null ) {
+                user.setRoles( String.join( ",", roles ) );
+            }
+            if ( username != null && !username.isEmpty() ) {
+                user.setName( username );
             }
 
             userRepository.save( user );
@@ -106,15 +148,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean deleteUser( String username, String currentUser ) {
-        if ( username == null ) {
+    @Transactional
+    public boolean deleteUser( Long id, String currentUsername ) {
+        var currentUser = userRepository.getUserByUsername( currentUsername );
+        if ( id == null || currentUser == null ) {
             return false;
         }
-        if ( currentUser.equals( username ) ) {
+        if ( currentUser.getId().equals( id ) ) {
             return false; // User cannot remove himself
         }
 
-        var user = userRepository.getUserByUsername( username );
+        var user = userRepository.getById( id );
         if ( user != null ) {
             userRepository.delete( user );
             return true;

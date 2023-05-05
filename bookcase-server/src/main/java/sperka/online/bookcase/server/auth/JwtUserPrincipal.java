@@ -1,18 +1,16 @@
-package sperka.online.bookcase.server.dto;
+package sperka.online.bookcase.server.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.security.Principal;
 import java.util.List;
 
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class CreateUserRequestDto {
+public class JwtUserPrincipal implements Principal {
     private String name;
-    private String password;
-    private List< String > roles;
+    private List<String> roles;
 }

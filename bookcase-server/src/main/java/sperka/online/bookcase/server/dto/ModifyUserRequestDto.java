@@ -12,7 +12,8 @@ import java.util.List;
 @Getter
 @Setter
 public class ModifyUserRequestDto {
-    private String username;
+    private Long id;
+    private String name;
     private List< String > roles;
     private String password;
 }

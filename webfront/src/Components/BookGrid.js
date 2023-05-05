@@ -1,4 +1,4 @@
-import "./BookGrid.css"
+import styles from "./BookGrid.module.css"
 import {DataGrid} from "@mui/x-data-grid"
 import {useEffect, useState} from "react";
 import {useGetBooksPage, useGetBooksCount} from "../Services/BooksServiceHook";
@@ -6,6 +6,10 @@ import BookFilters from "./BookFilters";
 import {Box, Button} from "@mui/material";
 import AddEditBook from "./AddEditBook";
 import DeleteBook from "./DeleteBook";
+import AddIcon from "@mui/icons-material/Add"
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const BookGrid = () => {
     const [books, setBooks] = useState([]);
@@ -87,22 +91,22 @@ const BookGrid = () => {
         }
     }
 
-    return (<div className={"main"}>
+    return (<div className={styles.main}>
         <AddEditBook open={addDialogOpen} bookId={null} onClose={handleBooksChanged}/>
         <AddEditBook open={editDialogOpen} bookId={selectedBookId} onClose={handleBooksChanged}/>
         <DeleteBook open={deleteDialogOpen} bookId={selectedBookId} onClose={handleBooksChanged} />
         <Box style={{"padding-bottom": "10px"}}>
-            <Button className={"button"} variant={"contained"} onClick={() => {
+            <Button className={styles.button} variant={"contained"} startIcon={<AddIcon/>} onClick={() => {
                 setAddDialogOpen(true);
             }}>Add</Button>
-            <Button className={"button"} variant={"outlined"} disabled={selectedBookId === null} onClick={() => {
+            <Button className={styles.button} variant={"outlined"} startIcon={<EditIcon/>} disabled={selectedBookId === null} onClick={() => {
                 setEditDialogOpen(true);
             }}>Edit</Button>
-            <Button className={"button"} variant={"outlined"} disabled={selectedBookId === null} onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
-            <Button className={"button"} variant={"outlined"}>Refresh</Button>
+            <Button className={styles.button} variant={"outlined"} startIcon={<DeleteIcon/>} color={"error"} disabled={selectedBookId === null} onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
+            <Button className={styles.button} variant={"outlined"} startIcon={<RefreshIcon/>}>Refresh</Button>
         </Box>
         <BookFilters onFilterChanged={filterChanged}/>
-        <DataGrid className={"dataGrid"} columns={cols} rows={books} autoHeight="true" rowCount={rowCountState}
+        <DataGrid className={styles.dataGrid} columns={cols} rows={books} autoHeight="true" rowCount={rowCountState}
                   initialState={{
                       sorting: {
                           sortModel: [{field: 'author', sort: 'asc'}],

@@ -31,7 +31,7 @@ public class JwtSecurityContext implements SecurityContext {
 
     @Override
     public Principal getUserPrincipal() {
-        return () -> username;
+        return new JwtUserPrincipal( username, roles );
     }
 
     @Override

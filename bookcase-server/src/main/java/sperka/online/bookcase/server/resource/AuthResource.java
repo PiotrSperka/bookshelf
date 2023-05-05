@@ -1,6 +1,7 @@
 package sperka.online.bookcase.server.resource;
 
 import lombok.extern.slf4j.Slf4j;
+import sperka.online.bookcase.server.dto.GenericResponseDto;
 import sperka.online.bookcase.server.dto.LoginRequestDto;
 import sperka.online.bookcase.server.dto.LoginResponseDto;
 import sperka.online.bookcase.server.service.AuthService;
@@ -10,6 +11,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path( "/auth" )
@@ -27,22 +29,23 @@ public class AuthResource {
     @Path( "login" )
     @PermitAll
     @POST
-    public LoginResponseDto login( LoginRequestDto dto ) {
+    public Response login( LoginRequestDto dto ) {
         var token = authService.loginUser( dto.getUsername(), dto.getPassword() );
         if ( token != null ) {
-            return new LoginResponseDto( token );
+            return Response.ok().entity( new LoginResponseDto( token ) ).build();
         }
 
-        throw new NotFoundException( "Wrong username or password" );
+        return Response.status( Response.Status.NOT_FOUND ).entity( new GenericResponseDto( "Wrong username or password" ) ).build();
     }
 
-    @Path( "test" )
+    @Path( "init" )
     @PermitAll
     @GET
-    public String test() {
-        authService.createUser( "user", "user", "user" );
-        authService.createUser( "admin", "admin", "admin" );
-
-        return "OK";
+    public Response initUsers() {
+        if ( authService.initializeUsers() ) {
+            return Response.ok().build();
+        } else {
+            return Response.status( Response.Status.FORBIDDEN ).build();
+        }
     }
 }

@@ -7,9 +7,14 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   background: white;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body > * {
+  flex-shrink: 0;
+}
+
+#root {
+  flex-grow: 1;
 }

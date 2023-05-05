@@ -1,0 +1,12 @@
+.bar {
+    overflow: hidden;
+    bottom: 0;
+    width: 100%;
+}
+
+.version:global(.MuiTypography-root) {
+    float: right;
+    margin-right: 20px;
+    margin-bottom: 3px;
+    font-size: 8pt;
+}

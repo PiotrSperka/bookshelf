@@ -1,0 +1,11 @@
+.appMainDiv {
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+  flex-grow: 1;
+}
+
+.appMainSpacer {
+  height: auto;
+  flex-grow: 1;
+}

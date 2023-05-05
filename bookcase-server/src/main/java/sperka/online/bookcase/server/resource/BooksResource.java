@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-@Path("/books")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed({Roles.ADMIN, Roles.USER})
+@Path( "/books" )
+@Produces( MediaType.APPLICATION_JSON )
+@Consumes( MediaType.APPLICATION_JSON )
+@RolesAllowed( { Roles.ADMIN, Roles.USER } )
 @Slf4j
 public class BooksResource {
     private final BookRepository bookRepository;
@@ -33,99 +33,76 @@ public class BooksResource {
     private final BookService bookService;
 
     @Inject
-    public BooksResource(BookRepository bookRepository, BookDatabaseSynchronizationService bookDatabaseSynchronizationService, BookService bookService) {
+    public BooksResource( BookRepository bookRepository, BookDatabaseSynchronizationService bookDatabaseSynchronizationService, BookService bookService ) {
         this.bookRepository = bookRepository;
         this.bookDatabaseSynchronizationService = bookDatabaseSynchronizationService;
         this.bookService = bookService;
     }
 
     @GET
-    @Path("/all")
-    public List<BookDto> list() {
-        return bookRepository.getAll().stream().map(Book::toDto).collect(Collectors.toList());
+    @Path( "/all" )
+    public List< BookDto > list() {
+        return bookRepository.getAll().stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @POST
-    @Path("/page/{page}/{perPage}")
-    public List<BookDto> page(@PathParam("page") int page, @PathParam("perPage") int perPage, BookFilterDto filters) {
-        return bookRepository.getPaginated(page, perPage, filters).stream().map(Book::toDto).collect(Collectors.toList());
+    @Path( "/page/{page}/{perPage}" )
+    public List< BookDto > page( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
+        return bookRepository.getPaginated( page, perPage, filters ).stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @GET
-    @Path("/count")
+    @Path( "/count" )
     public Long count() {
         return bookRepository.getCountNotDeleted();
     }
 
     @POST
-    @Path("/count")
-    public Long count(BookFilterDto filters) {
-        return bookRepository.getCountFiltered(filters);
+    @Path( "/count" )
+    public Long count( BookFilterDto filters ) {
+        return bookRepository.getCountFiltered( filters );
     }
 
     @GET
-    @Path("/id/{id}")
-    public BookDto byId(@PathParam("id") Long id) {
-        Book book = bookRepository.getById(id);
-        return (book != null) ? book.toDto() : null;
+    @Path( "/id/{id}" )
+    public BookDto byId( @PathParam( "id" ) Long id ) {
+        Book book = bookRepository.getById( id );
+        return ( book != null ) ? book.toDto() : null;
     }
 
     @POST
-    @Path("save")
-    public Response save(BookDto book) {
+    @Path( "save" )
+    public Response save( BookDto book ) {
         try {
-            return Response.ok().entity(bookService.save(book)).build();
-        } catch (ConstraintViolationException ex) {
-            return Response.status(Response.Status.FORBIDDEN).entity(ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toList())).build();
+            return Response.ok().entity( bookService.save( book ) ).build();
+        } catch ( ConstraintViolationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getConstraintViolations().stream().map( ConstraintViolation::getMessage ).collect( Collectors.toList() ) ).build();
         }
     }
 
     @DELETE
-    @Path("delete/{id}")
-    public Response delete(@PathParam("id") Long id) {
-        bookService.delete(id);
+    @Path( "delete/{id}" )
+    public Response delete( @PathParam( "id" ) Long id ) {
+        bookService.delete( id );
         return Response.ok().build();
     }
 
     @GET
-    @Path("/after/{date}")
-    public List<BookDto> afterDate(@PathParam("date") InstantParam date) {
-        return bookRepository.getCreatedAfter(date.getInstant()).stream().map(Book::toDto).collect(Collectors.toList());
+    @Path( "/after/{date}" )
+    public List< BookDto > afterDate( @PathParam( "date" ) InstantParam date ) {
+        return bookRepository.getCreatedAfter( date.getInstant() ).stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @GET
-    @Path("/last")
+    @Path( "/last" )
     public BookDto last() {
         Book book = bookRepository.getLastModified();
-        return (book != null) ? book.toDto() : null;
+        return ( book != null ) ? book.toDto() : null;
     }
 
-//    @GET
-//    @Path("/migrate")
-//    @Transactional
-//    public boolean migrate() {
-//        List<Book> books = bookRepository.getAll();
-//        books.forEach( book -> {
-//            if (book.getCreateDate() == null && book.getModifyDate() == null) {
-//                String timestamp = book.getTimestamp().toString();
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-//                try {
-//                    Instant timestampInstant = sdf.parse(timestamp).toInstant();
-//                    book.setCreateDate(timestampInstant);
-//                    book.setModifyDate(timestampInstant);
-//                    bookRepository.save(book);
-//                } catch (ParseException e) {
-//                    LOG.error(e.getMessage(), e);
-//                }
-//            }
-//        });
-//
-//        return true;
-//    }
-
     @POST
-    @Path("/sync")
-    public List<BookDto> syncStart(List<BookDto> books) {
-        return bookDatabaseSynchronizationService.synchronize(books, null); // TODO
+    @Path( "/sync" )
+    public List< BookDto > syncStart( List< BookDto > books ) {
+        return bookDatabaseSynchronizationService.synchronize( books, null ); // TODO
     }
 }
