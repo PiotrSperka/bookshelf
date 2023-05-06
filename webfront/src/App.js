@@ -6,11 +6,19 @@ import TopBar from "./Components/TopBar";
 import UserAdmin from "./Components/UserAdmin";
 import SystemAdmin from "./Components/SystemAdmin";
 import BottomBar from "./Components/BottomBar";
+import { useIntl } from "react-intl";
+import React, { useEffect } from "react";
 
 
 const App = () => {
+    const intl = useIntl();
+
+    useEffect( () => {
+        document.title = intl.formatMessage( { id: "app.header.name" } );
+    }, [] )
+
     return (
-        <div className={styles.appMainDiv}>
+        <div className={ styles.appMainDiv }>
             <BrowserRouter>
                 <Login/>
                 <TopBar/>
@@ -22,7 +30,7 @@ const App = () => {
                     </Route>
                     <Route path="*" element={ <h2>404 :(</h2> }/>
                 </Routes>
-                <div className={styles.appMainSpacer}></div>
+                <div className={ styles.appMainSpacer }></div>
                 <BottomBar/>
             </BrowserRouter>
         </div>
