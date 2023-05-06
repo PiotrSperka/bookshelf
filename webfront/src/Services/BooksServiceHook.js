@@ -1,15 +1,15 @@
 import {useApi, useGetRequest, usePostRequest} from "./GenericServiceHook";
 
 const useGetBooksPage = (pageNumber, pageSize, filters) => {
-    return usePostRequest('/books/page/' + (pageNumber + 1) + '/' + pageSize, filters);
+    return usePostRequest('/api/books/page/' + (pageNumber + 1) + '/' + pageSize, filters);
 }
 
 const useGetBook = (id) => {
-    return useGetRequest('/books/id/' + id, null);
+    return useGetRequest('/api/books/id/' + id, null);
 }
 
 const useGetBooksCount = (filters) => {
-    return usePostRequest('/books/count', filters);
+    return usePostRequest('/api/books/count', filters);
 }
 
 const useBookApi = () => {
@@ -17,12 +17,12 @@ const useBookApi = () => {
     const saveApi = useApi();
 
     const getById = id => {
-        getByIdApi.request('/books/id/' + id, 'GET', null);
+        getByIdApi.request('/api/books/id/' + id, 'GET', null);
         return {data: getByIdApi.data, error: getByIdApi.error, loading: getByIdApi.loading};
     }
 
     const save = (book) => {
-        saveApi.request('/books/save', 'POST', book);
+        saveApi.request('/api/books/save', 'POST', book);
         return saveApi;
     }
 

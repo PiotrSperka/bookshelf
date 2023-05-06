@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-@Path( "/books" )
+@Path( "/api/books" )
 @Produces( MediaType.APPLICATION_JSON )
 @Consumes( MediaType.APPLICATION_JSON )
 @RolesAllowed( { Roles.ADMIN, Roles.USER } )

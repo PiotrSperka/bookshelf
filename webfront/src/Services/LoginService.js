@@ -1,6 +1,6 @@
 const DoLogin = (form) => {
     return new Promise((resolve, reject) => {
-        fetch('/auth/login', {
+        fetch('/api/auth/login', {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(form)
