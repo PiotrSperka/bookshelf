@@ -6,6 +6,7 @@ import { useState } from "react";
 import LoginIcon from '@mui/icons-material/Login';
 import { useApi } from "../Services/GenericServiceHook";
 import { getUserInfoParams } from "../Services/UserApi";
+import { FormattedMessage } from "react-intl";
 
 const Login = () => {
     const userInfoApi = useApi();
@@ -38,14 +39,14 @@ const Login = () => {
 
     return (
         <Dialog open={ !isLoggedIn() }>
-            <DialogTitle>You need to log in</DialogTitle>
+            <DialogTitle><FormattedMessage id="login.dialog-title" /></DialogTitle>
             <form className="form" onSubmit={ formSubmitted }>
                 { loginFailed && <Alert severity={ "error" }>Wrong login or password!</Alert> }
-                <TextField name={ "username" } label={ "Login" } variant={ "standard" }/>
-                <TextField name={ "password" } label={ "Password" } type={ "password" } variant={ "standard" }
+                <TextField name={ "username" } label={ <FormattedMessage id="login.login" /> } variant={ "standard" }/>
+                <TextField name={ "password" } label={ <FormattedMessage id="login.password" /> } type={ "password" } variant={ "standard" }
                            autoComplete={ "current-password" }/>
                 <Button className="submitButton" variant={ "contained" } type={ "submit" }
-                        startIcon={ <LoginIcon/> }>Login</Button>
+                        startIcon={ <LoginIcon/> }><FormattedMessage id="login.login-button" /></Button>
             </form>
             <Backdrop open={ processing }>
                 <CircularProgress/>

@@ -1,6 +1,7 @@
 import "./BookFilters.css"
 import {Box, Grid, TextField} from "@mui/material";
 import {useEffect, useState} from "react";
+import { FormattedMessage } from "react-intl";
 
 const BookFilters = (props) => {
     const [filterState, setFilterState] = useState({author: "", title: "", release: "", signature: ""});
@@ -64,19 +65,19 @@ const BookFilters = (props) => {
         <Box>
             <Grid container>
                 <Grid className={"inputFieldGrid"} xs={3}>
-                    <TextField className={"inputField"} name={"author"} label={"Author"} variant={"standard"}
+                    <TextField className={"inputField"} name={"author"} label={<FormattedMessage id="filters.author"/>} variant={"standard"}
                                onChange={onAuthorFilterChanged}/>
                 </Grid>
                 <Grid className={"inputFieldGrid"} xs={3}>
-                    <TextField className={"inputField"} name={"title"} label={"Title"} variant={"standard"}
+                    <TextField className={"inputField"} name={"title"} label={<FormattedMessage id="filters.title"/>} variant={"standard"}
                                onChange={onTitleFilterChanged}/>
                 </Grid>
                 <Grid className={"inputFieldGrid"} xs={3}>
-                    <TextField className={"inputField"} name={"release"} label={"Release"} variant={"standard"}
+                    <TextField className={"inputField"} name={"release"} label={<FormattedMessage id="filters.release"/>} variant={"standard"}
                                onChange={onReleaseFilterChanged}/>
                 </Grid>
                 <Grid className={"inputFieldGrid"} xs={3}>
-                    <TextField className={"inputField"} name={"signature"} label={"Signature"} variant={"standard"}
+                    <TextField className={"inputField"} name={"signature"} label={<FormattedMessage id="filters.signature"/>} variant={"standard"}
                                onChange={onSignatureFilterChanged}/>
                 </Grid>
             </Grid>

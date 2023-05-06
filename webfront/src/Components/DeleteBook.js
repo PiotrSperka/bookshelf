@@ -3,6 +3,7 @@ import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogT
 import {useApi} from "../Services/GenericServiceHook";
 import {getDeleteSingleBookParams} from "../Services/BooksApi";
 import {useEffect} from "react";
+import { FormattedMessage } from "react-intl";
 
 const DeleteBook = (props) => {
     const deleteApi = useApi();
@@ -25,15 +26,15 @@ const DeleteBook = (props) => {
 
     return (
         <Dialog open={props.open}>
-            <DialogTitle>Confirm</DialogTitle>
+            <DialogTitle><FormattedMessage id="delete-book.dialog-title" /></DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    Do you want to delete selected book?
+                    <FormattedMessage id="delete-book.question" />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleDelete}>Yes</Button>
-                <Button onClick={handleClose} autoFocus>No</Button>
+                <Button onClick={handleDelete}><FormattedMessage id="delete-book.yes" /></Button>
+                <Button onClick={handleClose} autoFocus><FormattedMessage id="delete-book.no" /></Button>
             </DialogActions>
         </Dialog>
     )

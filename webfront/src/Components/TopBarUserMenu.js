@@ -3,10 +3,11 @@ import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from "@m
 import { useUserContext } from "../UserContextProvider";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 const TopBarUserMenu = () => {
     const navigate = useNavigate();
-    const { logout, hasRole } = useUserContext();
+    const { logout, hasRole, user } = useUserContext();
     const [ anchorElUser, setAnchorElUser ] = useState( null );
 
     const handleOpenUserMenu = ( event ) => {
@@ -39,25 +40,25 @@ const TopBarUserMenu = () => {
 
     return (
         <Box sx={ { flexGrow: 0 } }>
-            <Tooltip title={ "Open settings" }>
+            <Tooltip title={ <FormattedMessage id="topmenu.open-settings" /> }>
                 <IconButton onClick={ handleOpenUserMenu } sx={ { p: 0 } }>
-                    <Avatar alt={ "TODO: Username..." }/>
+                    <Avatar alt={ user.name }/>
                 </IconButton>
             </Tooltip>
             <Menu anchorEl={ anchorElUser } anchorOrigin={ { vertical: 'bottom', horizontal: 'right' } } keepMounted
                   transformOrigin={ { vertical: 'top', horizontal: 'right' } } open={ Boolean( anchorElUser ) }
                   onClose={ handleCloseUserMenu }>
                 <MenuItem onClick={ handleDatabaseSettings }>
-                    <Typography className={ "menuLabel" } textAlign={ "center" }>Database</Typography>
+                    <Typography className={ "menuLabel" } textAlign={ "center" }><FormattedMessage id="topmenu.database" /></Typography>
                 </MenuItem>
                 <MenuItem onClick={ handleUserSettings }>
-                    <Typography className={ "menuLabel" } textAlign={ "center" }>Settings</Typography>
+                    <Typography className={ "menuLabel" } textAlign={ "center" }><FormattedMessage id="topmenu.settings" /></Typography>
                 </MenuItem>
                 { hasRole( "admin" ) && <MenuItem onClick={ handleSystemSettings }>
-                    <Typography className={ "menuLabel" } textAlign={ "center" }>Administration</Typography>
+                    <Typography className={ "menuLabel" } textAlign={ "center" }><FormattedMessage id="topmenu.administration" /></Typography>
                 </MenuItem> }
                 <MenuItem onClick={ handleLogout }>
-                    <Typography className={ "menuLabel" } textAlign={ "center" }>Logout</Typography>
+                    <Typography className={ "menuLabel" } textAlign={ "center" }><FormattedMessage id="topmenu.logout" /></Typography>
                 </MenuItem>
             </Menu>
         </Box>

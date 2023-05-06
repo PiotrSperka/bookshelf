@@ -3,6 +3,7 @@ import {Alert, Backdrop, Button, CircularProgress, Dialog, DialogTitle, TextFiel
 import {useEffect, useState} from "react";
 import {useApi} from "../Services/GenericServiceHook";
 import {getGetSingleBookParams, getSaveBookParams} from "../Services/BooksApi";
+import { FormattedMessage } from "react-intl";
 
 const AddEditBook = props => {
     const saveApi = useApi();
@@ -72,20 +73,20 @@ const AddEditBook = props => {
 
     return (
         <Dialog open={props.open}>
-            <DialogTitle>Add or edit book</DialogTitle>
+            <DialogTitle><FormattedMessage id="add-book-dialog.dialog-title" /></DialogTitle>
             <form className={"form"} onSubmit={submitBook}>
                 {saveApi.error && <Alert severity={"error"}>{"Error: " + saveApi.error}</Alert>}
-                <TextField name={"author"} value={formData.author} label={"Author"} variant={"standard"}
+                <TextField name={"author"} value={formData.author} label={<FormattedMessage id="add-book-dialog.author" />} variant={"standard"}
                            onChange={onAuthorChange}/>
-                <TextField name={"title"} value={formData.title} label={"Title"} variant={"standard"}
+                <TextField name={"title"} value={formData.title} label={<FormattedMessage id="add-book-dialog.title" />} variant={"standard"}
                            onChange={onTitleChange}/>
-                <TextField name={"release"} value={formData.released} label={"Release"} variant={"standard"}
+                <TextField name={"release"} value={formData.released} label={<FormattedMessage id="add-book-dialog.release" />} variant={"standard"}
                            onChange={onReleaseChange}/>
-                <TextField name={"signature"} value={formData.signature} label={"Signature"} variant={"standard"}
+                <TextField name={"signature"} value={formData.signature} label={<FormattedMessage id="add-book-dialog.signature" />} variant={"standard"}
                            onChange={onSignatureChange}/>
-                <Button className="submitButton" variant={"contained"} type={"submit"}>Save</Button>
+                <Button className="submitButton" variant={"contained"} type={"submit"}><FormattedMessage id="add-book-dialog.save" /></Button>
                 <Button className="closeButton" variant={"outlined"} type={"button"}
-                        onClick={cancelDialog}>Cancel</Button>
+                        onClick={cancelDialog}><FormattedMessage id="add-book-dialog.cancel" /></Button>
             </form>
             <Backdrop open={saveApi.loading}>
                 <CircularProgress />

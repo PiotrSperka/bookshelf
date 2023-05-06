@@ -13,6 +13,7 @@ import { useApi } from "../Services/GenericServiceHook";
 import { useEffect, useState } from "react";
 import { addUserParams, editUserParams, getUserParams } from "../Services/UserApi";
 import { useUserContext } from "../UserContextProvider";
+import { FormattedMessage } from "react-intl";
 
 const AddEditUser = props => {
     const { user } = useUserContext();
@@ -95,19 +96,19 @@ const AddEditUser = props => {
 
     return (
         <Dialog open={props.open}>
-            <DialogTitle>User configuration</DialogTitle>
+            <DialogTitle><FormattedMessage id="user-dialog.dialog-title" /></DialogTitle>
             <form className={"form"} onSubmit={submitUser}>
                 {saveApi.error && <Alert severity={"error"}>{"Error: " + saveApi.error}</Alert>}
-                <TextField name={"name"} value={formData.name} label={"Name"} variant={"standard"}
+                <TextField name={"name"} value={formData.name} label={<FormattedMessage id="user-dialog.name" />} variant={"standard"}
                            onChange={onNameChange}/>
-                <TextField name={"password"} value={formData.password} label={"Password"} variant={"standard"} type={ "password" }
+                <TextField name={"password"} value={formData.password} label={<FormattedMessage id="user-dialog.password" />} variant={"standard"} type={ "password" }
                            onChange={onPasswordChange}/>
-                <TextField name={"roles"} value={formData.roles} label={"Roles"} variant={"standard"}
+                <TextField name={"roles"} value={formData.roles} label={<FormattedMessage id="user-dialog.roles" />} variant={"standard"}
                            onChange={onRolesChange}/>
-                <FormControlLabel control={<Checkbox defaultChecked />} label="Active" name={"active"} value={formData.active} disabled={selfEditing} onChange={onActiveChange} />
-                <Button className="submitButton" variant={"contained"} type={"submit"}>Save</Button>
+                <FormControlLabel control={<Checkbox defaultChecked />} label={<FormattedMessage id="user-dialog.active" />} name={"active"} value={formData.active} disabled={selfEditing} onChange={onActiveChange} />
+                <Button className="submitButton" variant={"contained"} type={"submit"}><FormattedMessage id="user-dialog.save" /></Button>
                 <Button className="closeButton" variant={"outlined"} type={"button"}
-                        onClick={cancelDialog}>Cancel</Button>
+                        onClick={cancelDialog}><FormattedMessage id="user-dialog.cancel" /></Button>
             </form>
             <Backdrop open={saveApi.loading}>
                 <CircularProgress />

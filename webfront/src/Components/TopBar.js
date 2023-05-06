@@ -2,6 +2,7 @@ import "./TopBar.css"
 import {AppBar, Box, Toolbar, Typography} from "@mui/material";
 import {useUserContext} from "../UserContextProvider";
 import TopBarUserMenu from "./TopBarUserMenu";
+import { FormattedMessage } from "react-intl";
 
 const TopBar = () => {
     const {isLoggedIn} = useUserContext();
@@ -11,7 +12,7 @@ const TopBar = () => {
             <AppBar position={"static"}>
                 <Toolbar>
                     <Typography variant={"h6"} noWrap component={"div"} sx={{flexGrow: 1}}>
-                        Bookshelf: The book collection database
+                        <FormattedMessage id="app.header.name" />
                     </Typography>
                     {isLoggedIn() && <TopBarUserMenu />}
                 </Toolbar>

@@ -3,14 +3,27 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {UserContextProvider} from "./UserContextProvider";
+import { UserContextProvider } from "./UserContextProvider";
+import { IntlProvider } from "react-intl";
+import messages_en from "./Translations/en.json"
+import messages_pl from "./Translations/pl.json"
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const messages = {
+    'en': messages_en,
+    'pl': messages_pl
+};
+
+const locale = navigator.language;
+const language = locale.split( /[-_]/ )[ 0 ] in messages ? locale.split( /[-_]/ )[ 0 ] : 'en';
+
+const root = ReactDOM.createRoot( document.getElementById( 'root' ) );
 root.render(
     <React.StrictMode>
-        <UserContextProvider>
-            <App/>
-        </UserContextProvider>
+        <IntlProvider locale={ language } defaultLocale={ 'en' } messages={ messages[ language ] }>
+            <UserContextProvider>
+                <App/>
+            </UserContextProvider>
+        </IntlProvider>
     </React.StrictMode>
 );
 
