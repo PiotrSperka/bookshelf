@@ -26,6 +26,7 @@ public class User implements IdProvider {
 
     @Username
     @NotNull
+    @Column( unique = true )
     private String name;
 
     @Column( name = "passwd" )

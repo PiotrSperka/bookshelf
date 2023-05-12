@@ -2,7 +2,7 @@ package sperka.online.bookcase.server.resource;
 
 import sperka.online.bookcase.server.auth.Roles;
 import sperka.online.bookcase.server.dto.*;
-import sperka.online.bookcase.server.service.AuthService;
+import sperka.online.bookcase.server.service.UserService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
@@ -18,25 +18,25 @@ import javax.ws.rs.core.SecurityContext;
 @Produces( MediaType.APPLICATION_JSON )
 @Consumes( MediaType.APPLICATION_JSON )
 public class UserResource {
-    AuthService authService;
+    UserService userService;
 
     @Inject
-    public UserResource( AuthService authService ) {
-        this.authService = authService;
+    public UserResource( UserService userService ) {
+        this.userService = userService;
     }
 
     @Path( "/all" )
     @RolesAllowed( Roles.ADMIN )
     @GET
     public Response getAll() {
-        return Response.ok().entity( authService.getAll() ).build();
+        return Response.ok().entity( userService.getAll() ).build();
     }
 
     @Path( "/id/{id}" )
     @RolesAllowed( Roles.ADMIN )
     @GET
     public Response get( @PathParam( "id" ) Long id ) {
-        var user = authService.get( id );
+        var user = userService.get( id );
         if ( user != null ) {
             return Response.ok().entity( user ).build();
         }
@@ -48,7 +48,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response addUser( CreateUserRequestDto request ) {
-        var result = authService.createUser( request.getName(), request.getPassword(), request.getRoles() );
+        var result = userService.createUser( request.getName(), request.getPassword(), request.getRoles() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }
@@ -60,7 +60,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response editUser( ModifyUserRequestDto request ) {
-        var result = authService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles() );
+        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }
@@ -72,7 +72,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @DELETE
     public Response addUser( @PathParam( "id" ) Long id, @Context SecurityContext securityContext ) {
-        var result = authService.deleteUser( id, securityContext.getUserPrincipal().getName() );
+        var result = userService.deleteUser( id, securityContext.getUserPrincipal().getName() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }
@@ -88,7 +88,7 @@ public class UserResource {
             return Response.status( Response.Status.FORBIDDEN ).entity( new GenericResponseDto( "New password does not match" ) ).build();
         }
 
-        if ( authService.modifyPassword( securityContext.getUserPrincipal().getName(), dto.getCurrentPassword(), dto.getNewPassword() ) ) {
+        if ( userService.modifyPassword( securityContext.getUserPrincipal().getName(), dto.getCurrentPassword(), dto.getNewPassword() ) ) {
             return Response.ok().entity( new GenericResponseDto( "OK" ) ).build();
         }
 
@@ -100,6 +100,6 @@ public class UserResource {
     @Path( "/info" )
     public UserInfoDto getUserInfo( @Context SecurityContext securityContext ) {
         var principal = securityContext.getUserPrincipal();
-        return authService.getByUsername( principal.getName() );
+        return userService.getByUsername( principal.getName() );
     }
 }
