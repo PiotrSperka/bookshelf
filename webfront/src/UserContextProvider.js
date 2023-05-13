@@ -1,10 +1,29 @@
-import { createContext, useContext, useState } from "react";
-import { DoLogout } from "./Services/LoginService";
+import { createContext, useContext, useEffect, useState } from "react";
+import { DoLogout, DoRefresh } from "./Services/LoginService";
 
 export const UserContext = createContext();
 
 export const UserContextProvider = ( { children } ) => {
     const [ user, setUser ] = useState( JSON.parse( localStorage.getItem( "userInfo" ) ) );
+
+    useEffect( () => {
+        const timer = setInterval( () => {
+            refresh();
+        }, 60000 );
+        return () => clearInterval( timer );
+    } )
+
+    const refresh = () => {
+        if ( isLoggedIn() ) {
+            DoRefresh( user.token ).then( newToken => {
+                if ( newToken !== user.token ) {
+                    setUser( prevState => ( { ...prevState, token: newToken } ) )
+                }
+            } ).catch( () => {
+                logout()
+            } )
+        }
+    }
 
     const logout = () => {
         if ( isLoggedIn() ) {

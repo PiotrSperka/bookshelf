@@ -33,4 +33,30 @@ const DoLogout = token => {
     } )
 }
 
-export { DoLogin, DoLogout };
+const DoRefresh = token => {
+    return new Promise( ( resolve, reject ) => {
+        fetch( '/api/auth/refresh', {
+            method: 'GET',
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+            body: null
+        } ).then( response => {
+            if ( response.status === 200 ) {
+                response.json().then( json => {
+                    if ( json.token ) {
+                        resolve( json.token );
+                    } else {
+                        reject( null );
+                    }
+                } ).catch( err => {
+                    reject( err );
+                } )
+            } else {
+                reject( null );
+            }
+        } ).catch( err => {
+            reject( err );
+        } )
+    } )
+}
+
+export { DoLogin, DoLogout, DoRefresh };

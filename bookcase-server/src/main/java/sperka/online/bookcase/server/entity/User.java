@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @UserDefinition
 public class User implements IdProvider {
     @Id
-    @SequenceGenerator( name = "userSeq", sequenceName = "user_id_seq", allocationSize = 1, initialValue = 1 )
+    @SequenceGenerator( name = "userSeq", sequenceName = "user_id_seq", allocationSize = 1 )
     @GeneratedValue( generator = "userSeq" )
     private Long id;
 
@@ -39,6 +39,15 @@ public class User implements IdProvider {
 
     public void setPassword( String password ) {
         this.password = BcryptUtil.bcryptHash( password );
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", roles='" + roles + '\'' +
+                '}';
     }
 
     public static User create( String username, String password, String roles ) {

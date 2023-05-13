@@ -22,7 +22,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Book implements IdProvider, Comparable<BookDto> {
     @Id
-    @SequenceGenerator( name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1, initialValue = 1 )
+    @SequenceGenerator( name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1 )
     @GeneratedValue( generator = "bookSeq" )
     private Long id;
 
@@ -67,6 +67,20 @@ public class Book implements IdProvider, Comparable<BookDto> {
         signature = dto.getSignature();
         released = dto.getReleased();
         deleted = dto.getDeleted();
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", author='" + author + '\'' +
+                ", title='" + title + '\'' +
+                ", released='" + released + '\'' +
+                ", signature='" + signature + '\'' +
+                ", createDate=" + createDate +
+                ", modifyDate=" + modifyDate +
+                ", deleted=" + deleted +
+                '}';
     }
 
     @Override

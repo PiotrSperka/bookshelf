@@ -1,28 +1,25 @@
 package sperka.online.bookcase.server.service.impl;
 
-import io.jsonwebtoken.Jwts;
-import sperka.online.bookcase.server.auth.SigningKey;
 import sperka.online.bookcase.server.dto.UserInfoDto;
 import sperka.online.bookcase.server.entity.User;
 import sperka.online.bookcase.server.repository.UserRepository;
+import sperka.online.bookcase.server.service.LogService;
 import sperka.online.bookcase.server.service.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final LogService logService;
 
-    @Inject
-    public UserServiceImpl( UserRepository userRepository ) {
+    public UserServiceImpl( UserRepository userRepository, LogService logService ) {
         this.userRepository = userRepository;
+        this.logService = logService;
     }
 
     @Override
@@ -33,6 +30,8 @@ public class UserServiceImpl implements UserService {
 
         createUser( "user", "user", Collections.singletonList( "user" ) );
         createUser( "admin", "admin", Collections.singletonList( "admin" ) );
+
+        logService.add( "Initialized users table", "system" );
 
         return true;
     }
@@ -69,7 +68,9 @@ public class UserServiceImpl implements UserService {
         }
 
         if ( user == null ) {
-            userRepository.save( User.create( username, password, String.join( ",", roles ) ) );
+            user = User.create( username, password, String.join( ",", roles ) );
+            userRepository.save( user );
+            logService.add( "Created new user " + user, "system" );
             return true;
         }
 
@@ -93,6 +94,7 @@ public class UserServiceImpl implements UserService {
         if ( user.isPasswordMatching( oldPassword ) ) {
             user.setPassword( newPassword );
             userRepository.save( user );
+            logService.add( "Changed password for user id = " + user.getId() + " named '" + user.getName() + "'", "system" );
             return true;
         }
 
@@ -119,6 +121,7 @@ public class UserServiceImpl implements UserService {
             }
 
             userRepository.save( user );
+            logService.add( "Modified user " + user, "system" );
 
             return true;
         }
@@ -140,6 +143,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.getById( id );
         if ( user != null ) {
             userRepository.delete( user );
+            logService.add( "Deleted user " + user, "system" );
             return true;
         }
 

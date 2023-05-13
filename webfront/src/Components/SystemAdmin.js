@@ -10,6 +10,7 @@ import DeleteUser from "./DeleteUser";
 import { useUserContext } from "../UserContextProvider";
 import { useNavigate } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
+import LogsGrid from "./Admin/LogsGrid";
 
 const SystemAdmin = () => {
     const cols = [ {
@@ -130,16 +131,14 @@ const SystemAdmin = () => {
                               rowCount={ users.length } getRowId={ ( row ) => row.id }/>
                 </CardContent>
             </Card>
-            { false && <Card className={ styles.cardFullWidth }>
+            <Card className={ styles.cardFullWidth }>
                 <CardContent>
                     <Typography gutterBottom variant={ "h5" } component={ "div" }>
-                        Deleted books
+                        <FormattedMessage id="admin.logs"/>
                     </Typography>
-                    <DataGrid className={ styles.dataGrid } columns={ cols }
-                              rows={ [ { id: 1, username: "user", roles: [ "user" ], active: true } ] }
-                              autoHeight={ true } rowCount={ 1 } getRowId={ ( row ) => row.id }/>
+                    <LogsGrid />
                 </CardContent>
-            </Card> }
+            </Card>
         </Box>
     )
 }

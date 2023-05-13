@@ -1,12 +1,9 @@
 package sperka.online.bookcase.server.resource;
 
-import lombok.extern.slf4j.Slf4j;
 import sperka.online.bookcase.server.auth.Roles;
 import sperka.online.bookcase.server.dto.BookDto;
 import sperka.online.bookcase.server.dto.BookFilterDto;
-import sperka.online.bookcase.server.entity.Book;
-import sperka.online.bookcase.server.helpers.InstantParam;
-import sperka.online.bookcase.server.repository.BookRepository;
+import sperka.online.bookcase.server.dto.GenericResponseDto;
 import sperka.online.bookcase.server.service.BookDatabaseSynchronizationService;
 import sperka.online.bookcase.server.service.BookService;
 
@@ -26,48 +23,48 @@ import java.util.stream.Collectors;
 @Produces( MediaType.APPLICATION_JSON )
 @Consumes( MediaType.APPLICATION_JSON )
 @RolesAllowed( { Roles.ADMIN, Roles.USER } )
-@Slf4j
 public class BooksResource {
-    private final BookRepository bookRepository;
     private final BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
     private final BookService bookService;
 
     @Inject
-    public BooksResource( BookRepository bookRepository, BookDatabaseSynchronizationService bookDatabaseSynchronizationService, BookService bookService ) {
-        this.bookRepository = bookRepository;
+    public BooksResource( BookDatabaseSynchronizationService bookDatabaseSynchronizationService, BookService bookService ) {
         this.bookDatabaseSynchronizationService = bookDatabaseSynchronizationService;
         this.bookService = bookService;
     }
 
     @GET
     @Path( "/all" )
-    public List< BookDto > list() {
-        return bookRepository.getAll().stream().map( Book::toDto ).collect( Collectors.toList() );
+    public Response list() {
+        return Response.ok().entity( bookService.getAll() ).build();
     }
 
     @POST
     @Path( "/page/{page}/{perPage}" )
-    public List< BookDto > page( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
-        return bookRepository.getPaginated( page, perPage, filters ).stream().map( Book::toDto ).collect( Collectors.toList() );
+    public Response page( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
+        return Response.ok().entity( bookService.getPaginated( page, perPage, filters ) ).build();
     }
 
     @GET
     @Path( "/count" )
-    public Long count() {
-        return bookRepository.getCountNotDeleted();
+    public Response count() {
+        return Response.ok().entity( bookService.getCount() ).build();
     }
 
     @POST
     @Path( "/count" )
-    public Long count( BookFilterDto filters ) {
-        return bookRepository.getCountFiltered( filters );
+    public Response count( BookFilterDto filters ) {
+        return Response.ok().entity( bookService.getCount( filters ) ).build();
     }
 
     @GET
     @Path( "/id/{id}" )
-    public BookDto byId( @PathParam( "id" ) Long id ) {
-        Book book = bookRepository.getById( id );
-        return ( book != null ) ? book.toDto() : null;
+    public Response byId( @PathParam( "id" ) Long id ) {
+        try {
+            return Response.ok().entity( bookService.get( id ) ).build();
+        } catch ( Exception ex ) {
+            return Response.status( Response.Status.NOT_FOUND ).entity( new GenericResponseDto( ex.getMessage() ) ).build();
+        }
     }
 
     @POST
@@ -83,21 +80,12 @@ public class BooksResource {
     @DELETE
     @Path( "delete/{id}" )
     public Response delete( @PathParam( "id" ) Long id ) {
-        bookService.delete( id );
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path( "/after/{date}" )
-    public List< BookDto > afterDate( @PathParam( "date" ) InstantParam date ) {
-        return bookRepository.getCreatedAfter( date.getInstant() ).stream().map( Book::toDto ).collect( Collectors.toList() );
-    }
-
-    @GET
-    @Path( "/last" )
-    public BookDto last() {
-        Book book = bookRepository.getLastModified();
-        return ( book != null ) ? book.toDto() : null;
+        try {
+            bookService.delete( id );
+            return Response.ok().build();
+        } catch ( Exception ex ) {
+            return Response.status( Response.Status.NOT_FOUND ).entity( new GenericResponseDto( ex.getMessage() ) ).build();
+        }
     }
 
     @POST
