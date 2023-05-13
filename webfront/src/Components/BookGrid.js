@@ -12,6 +12,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { FormattedMessage } from "react-intl";
 import { useApi } from "../Services/GenericServiceHook";
 import { getBooksCountParams, getBooksPageParams } from "../Services/BooksApi";
+import { useUserContext } from "../UserContextProvider";
 
 const BookGrid = () => {
     const [ books, setBooks ] = useState( [] );
@@ -43,6 +44,8 @@ const BookGrid = () => {
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState( false );
     const [ selectedBookId, setSelectedBookId ] = useState( null );
 
+    const {isLoggedIn} = useUserContext();
+
     const locale = navigator.language.split( /[-_]/ )[ 0 ];
     const dataGridLocalization = locale === 'pl' ? plPL.components.MuiDataGrid.defaultProps.localeText : enUS.components.MuiDataGrid.defaultProps.localeText;
 
@@ -68,9 +71,8 @@ const BookGrid = () => {
     }, [ getBooksPageApi.data ] );
 
     useEffect( () => {
-        getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters ) )
-        getBooksCountApi.request( getBooksCountParams( filters ) )
-    }, [ paginationModel.page, paginationModel.pageSize, filters ] )
+        loadBooks()
+    }, [ paginationModel.page, paginationModel.pageSize, filters, isLoggedIn ] )
 
     const filterChanged = filter => {
         setFilters( prevState => ( { ...prevState, ...filter } ) );
@@ -99,6 +101,12 @@ const BookGrid = () => {
         setEditDialogOpen( false );
         setDeleteDialogOpen( false );
         if ( refresh === true ) {
+            loadBooks()
+        }
+    }
+
+    const loadBooks = () => {
+        if (isLoggedIn()) {
             getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters ) )
             getBooksCountApi.request( getBooksCountParams( filters ) )
         }

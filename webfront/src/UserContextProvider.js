@@ -1,13 +1,37 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { DoLogout, DoRefresh } from "./Services/LoginService";
 
 export const UserContext = createContext();
 
 export const UserContextProvider = ( { children } ) => {
     const [ user, setUser ] = useState( JSON.parse( localStorage.getItem( "userInfo" ) ) );
 
+    useEffect( () => {
+        const timer = setInterval( () => {
+            refresh();
+        }, 60000 );
+        return () => clearInterval( timer );
+    } )
+
+    const refresh = () => {
+        if ( isLoggedIn() ) {
+            DoRefresh( user.token ).then( newToken => {
+                if ( newToken !== user.token ) {
+                    setUser( prevState => ( { ...prevState, token: newToken } ) )
+                }
+            } ).catch( () => {
+                logout()
+            } )
+        }
+    }
+
     const logout = () => {
-        localStorage.removeItem( "userInfo" );
-        setUser( { token: null, name: null, roles: [] } );
+        if ( isLoggedIn() ) {
+            DoLogout( user.token ).then( () => {
+                localStorage.removeItem( "userInfo" );
+                setUser( { token: null, name: null, roles: [] } );
+            } )
+        }
     }
 
     const isLoggedIn = () => {
@@ -20,7 +44,7 @@ export const UserContextProvider = ( { children } ) => {
     }
 
     const hasRole = role => {
-        return user.roles.indexOf(role) > -1;
+        return user.roles.indexOf( role ) > -1;
     }
 
     return (
