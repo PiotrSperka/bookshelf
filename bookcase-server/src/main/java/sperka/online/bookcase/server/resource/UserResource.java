@@ -60,7 +60,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response editUser( ModifyUserRequestDto request ) {
-        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles() );
+        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles(), request.getActive() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }

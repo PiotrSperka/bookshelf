@@ -19,99 +19,106 @@ const AddEditUser = props => {
     const { user } = useUserContext();
     const saveApi = useApi()
     const getUserApi = useApi()
-    const [formData, setFormData] = useState({id: null, name: "", roles: "", password: "", active: false});
-    const [selfEditing, setSelfEditing] = useState(false);
+    const [ formData, setFormData ] = useState( { id: null, name: "", roles: "", password: "", active: false } );
+    const [ selfEditing, setSelfEditing ] = useState( false );
 
-    useEffect(() => {
-        if (props.userId === parseInt(props.userId, 10) ) {
-            getUserApi.request(getUserParams(props.userId));
+    useEffect( () => {
+        if ( props.userId === parseInt( props.userId, 10 ) && props.open === true ) {
+            getUserApi.request( getUserParams( props.userId ) );
         } else {
             resetForm();
         }
-    }, [props.userId])
+    }, [ props.userId, props.open ] )
 
-    useEffect(() => {
+    useEffect( () => {
         const val = user.id === props.userId;
-        if (selfEditing !== val) {
-            setSelfEditing(val);
+        if ( selfEditing !== val ) {
+            setSelfEditing( val );
         }
-    }, [user.id, props.userId, selfEditing])
+    }, [ user.id, props.userId, selfEditing ] )
 
-    useEffect(() => {
-        if (getUserApi.data !== null) {
-            if (getUserApi.data.status === 200) {
-                getUserApi.data.clone().json().then(json => {
-                    setFormData({...json, password: "", roles: json.roles.join(',')});
-                });
+    useEffect( () => {
+        if ( getUserApi.data !== null ) {
+            if ( getUserApi.data.status === 200 ) {
+                getUserApi.data.clone().json().then( json => {
+                    setFormData( { ...json, password: "", roles: json.roles.join( ',' ) } );
+                } );
             } else {
                 resetForm();
             }
         }
-    }, [getUserApi.data])
+    }, [ getUserApi.data ] )
 
-    useEffect(() => {
-        if (saveApi.error === "" && saveApi.loading === false && props.onClose) {
-            props.onClose(true);
+    useEffect( () => {
+        if ( saveApi.error === "" && saveApi.loading === false && props.onClose ) {
+            props.onClose( true );
         }
-    }, [saveApi.error, saveApi.loading])
+    }, [ saveApi.error, saveApi.loading ] )
 
     const resetForm = () => {
-        setFormData({id: null, name: "", roles: "", password: "", active: false});
+        setFormData( { id: null, name: "", roles: "", password: "", active: false } );
     }
 
     const submitUser = event => {
         event.preventDefault();
-        if (formData.id != null) {
-            saveApi.request(editUserParams({...formData, roles: formData.roles.split(',')}))
+        if ( formData.id != null ) {
+            saveApi.request( editUserParams( { ...formData, roles: formData.roles.split( ',' ) } ) )
         } else {
-            saveApi.request(addUserParams({...formData, roles: formData.roles.split(',')}))
+            saveApi.request( addUserParams( { ...formData, roles: formData.roles.split( ',' ) } ) )
         }
     }
 
     const cancelDialog = () => {
-        if (props.onClose) {
+        if ( props.onClose ) {
             saveApi.reset();
-            if (formData.id === null) {
+            if ( formData.id === null ) {
                 resetForm();
             }
-            props.onClose(false);
+            props.onClose( false );
         }
     }
 
     const onNameChange = event => {
-        setFormData(prevState => ({...prevState, name: event.target.value}));
+        setFormData( prevState => ( { ...prevState, name: event.target.value } ) );
     }
 
     const onPasswordChange = event => {
-        setFormData(prevState => ({...prevState, password: event.target.value}));
+        setFormData( prevState => ( { ...prevState, password: event.target.value } ) );
     }
 
     const onRolesChange = event => {
-        setFormData(prevState => ({...prevState, roles: event.target.value}));
+        setFormData( prevState => ( { ...prevState, roles: event.target.value } ) );
     }
 
     const onActiveChange = event => {
-        setFormData(prevState => ({...prevState, active: event.target.value}));
+        setFormData( prevState => ( { ...prevState, active: event.target.checked } ) );
     }
 
     return (
-        <Dialog open={props.open}>
-            <DialogTitle><FormattedMessage id="user-dialog.dialog-title" /></DialogTitle>
-            <form className={"form"} onSubmit={submitUser}>
-                {saveApi.error && <Alert severity={"error"}>{"Error: " + saveApi.error}</Alert>}
-                <TextField name={"name"} value={formData.name} label={<FormattedMessage id="user-dialog.name" />} variant={"standard"}
-                           onChange={onNameChange}/>
-                <TextField name={"password"} value={formData.password} label={<FormattedMessage id="user-dialog.password" />} variant={"standard"} type={ "password" }
-                           onChange={onPasswordChange}/>
-                <TextField name={"roles"} value={formData.roles} label={<FormattedMessage id="user-dialog.roles" />} variant={"standard"}
-                           onChange={onRolesChange}/>
-                <FormControlLabel control={<Checkbox defaultChecked />} label={<FormattedMessage id="user-dialog.active" />} name={"active"} value={formData.active} disabled={selfEditing} onChange={onActiveChange} />
-                <Button className="submitButton" variant={"contained"} type={"submit"}><FormattedMessage id="user-dialog.save" /></Button>
-                <Button className="closeButton" variant={"outlined"} type={"button"}
-                        onClick={cancelDialog}><FormattedMessage id="user-dialog.cancel" /></Button>
+        <Dialog open={ props.open }>
+            <DialogTitle><FormattedMessage id="user-dialog.dialog-title"/></DialogTitle>
+            <form className={ "form" } onSubmit={ submitUser }>
+                { saveApi.error && <Alert severity={ "error" }>{ "Error: " + saveApi.error }</Alert> }
+                <TextField name={ "name" } value={ formData.name } label={ <FormattedMessage id="user-dialog.name"/> }
+                           variant={ "standard" }
+                           onChange={ onNameChange }/>
+                <TextField name={ "password" } value={ formData.password }
+                           label={ <FormattedMessage id="user-dialog.password"/> } variant={ "standard" }
+                           type={ "password" }
+                           onChange={ onPasswordChange }/>
+                <TextField name={ "roles" } value={ formData.roles }
+                           label={ <FormattedMessage id="user-dialog.roles"/> } variant={ "standard" }
+                           onChange={ onRolesChange }/>
+                <FormControlLabel control={ <Checkbox defaultChecked/> }
+                                  label={ <FormattedMessage id="user-dialog.active"/> } name={ "active" }
+                                  checked={ formData.active } disabled={ selfEditing } onChange={ onActiveChange }/>
+                <Button className="submitButton" variant={ "contained" } type={ "submit" }><FormattedMessage
+                    id="user-dialog.save"/></Button>
+                <Button className="closeButton" variant={ "outlined" } type={ "button" }
+                        onClick={ cancelDialog }><FormattedMessage id="user-dialog.cancel"/></Button>
             </form>
-            <Backdrop open={saveApi.loading}>
-                <CircularProgress />
+            <Backdrop open={ saveApi.loading }>
+                <CircularProgress/>
             </Backdrop>
         </Dialog>
     )
