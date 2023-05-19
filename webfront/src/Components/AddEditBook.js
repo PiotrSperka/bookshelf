@@ -41,10 +41,10 @@ const AddEditBook = props => {
     }, [ getBookApi.data ] )
 
     useEffect( () => {
-        if ( saveApi.error === "" && saveApi.loading === false && props.onClose ) {
+        if ( saveApi.data !== null && saveApi.error === "" && saveApi.loading === false && props.onClose ) {
             props.onClose( true );
         }
-    }, [ saveApi.error, saveApi.loading ] )
+    }, [ saveApi.loading ] )
 
     const submitBook = event => {
         event.preventDefault();
@@ -78,7 +78,7 @@ const AddEditBook = props => {
     }
 
     return (
-        <Dialog className={styles.dialog} open={ props.open }>
+        <Dialog className={ styles.dialog } open={ props.open }>
             <DialogTitle><FormattedMessage id="add-book-dialog.dialog-title"/></DialogTitle>
             <form className={ styles.form } onSubmit={ submitBook }>
                 { saveApi.error && <Alert severity={ "error" }>{ "Error: " + saveApi.error }</Alert> }

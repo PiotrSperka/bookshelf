@@ -34,7 +34,7 @@ const BookGrid = () => {
     const [ paginationModel, setPaginationModel ] = useState( { page: 0, pageSize: 15 } );
     const [ rowCountState, setRowCountState ] = useState( 0 );
     const [ isLoading, setIsLoading ] = useState( false );
-    const [ filters, setFilters ] = useState( { sortField: "author", sortDirection: "asc" } );
+    const [ filters, setFilters ] = useState( { sortField: "author", sortDirection: "asc", author: "", title: "", release: "", signature: "" } );
 
     const getBooksPageApi = useApi();
     const getBooksCountApi = useApi();
@@ -72,7 +72,7 @@ const BookGrid = () => {
 
     useEffect( () => {
         loadBooks()
-    }, [ paginationModel.page, paginationModel.pageSize, filters, isLoggedIn ] )
+    }, [ paginationModel.page, paginationModel.pageSize, filters.sortField, filters.sortDirection, filters.author, filters.title, filters.release, filters.signature, isLoggedIn ] )
 
     const filterChanged = filter => {
         setFilters( prevState => ( { ...prevState, ...filter } ) );
