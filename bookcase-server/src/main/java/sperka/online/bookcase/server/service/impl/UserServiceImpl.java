@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean modifyUser( Long id, String username, String password, List< String > roles ) {
+    public boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active ) {
         if ( id == null ) {
             return false;
         }
@@ -118,6 +118,9 @@ public class UserServiceImpl implements UserService {
             }
             if ( username != null && !username.isEmpty() ) {
                 user.setName( username );
+            }
+            if ( active != null ) {
+                user.setActive( active );
             }
 
             userRepository.save( user );

@@ -103,7 +103,13 @@ const LogsGrid = () => {
                   onPaginationModelChange={ setPaginationModel }
                   onSortModelChange={ setSortModel }
                   sortingMode="server"
-                  rowHeight={ 30 }
+                  getRowHeight={ () => 'auto' }
+                  density="compact"
+                  sx={ {
+                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
+                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
+                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
+                  } }
                   disableColumnMenu={ true }/>
     )
 }

@@ -30,7 +30,7 @@ const SystemAdmin = () => {
             }
         }
     }, {
-        field: 'isActive',
+        field: 'active',
         headerName: <FormattedMessage id="admin.users-management.active"/>,
         width: 100,
         renderCell: params => {

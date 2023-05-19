@@ -9,9 +9,9 @@ public interface UserService {
 
     List< UserInfoDto > getAll();
 
-    UserInfoDto get(Long id);
+    UserInfoDto get( Long id );
 
-    UserInfoDto getByUsername(String username);
+    UserInfoDto getByUsername( String username );
 
     long countUsers();
 
@@ -19,7 +19,7 @@ public interface UserService {
 
     boolean modifyPassword( String username, String oldPassword, String newPassword );
 
-    boolean modifyUser( Long id, String username, String password, List< String > roles );
+    boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active );
 
     boolean deleteUser( Long id, String currentUsername );
 }

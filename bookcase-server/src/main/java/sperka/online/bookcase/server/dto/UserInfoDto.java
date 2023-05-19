@@ -18,14 +18,14 @@ public class UserInfoDto {
     private Long id;
     private String name;
     private List<String> roles;
-    private Boolean isActive;
+    private Boolean active;
 
     public static UserInfoDto fromEntity( User user) {
         var dto = new UserInfoDto();
         dto.setId( user.getId() );
         dto.setName( user.getName() );
         dto.setRoles( Arrays.stream( user.getRoles().split( "," ) ).collect( Collectors.toList() ) );
-        dto.setIsActive( true ); // TODO: in future
+        dto.setActive( user.getActive() );
 
         return dto;
     }

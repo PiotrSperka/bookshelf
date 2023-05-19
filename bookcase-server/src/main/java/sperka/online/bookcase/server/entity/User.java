@@ -8,6 +8,7 @@ import io.quarkus.security.jpa.Username;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -37,6 +38,9 @@ public class User implements IdProvider {
     @Roles
     public String roles;
 
+    @ColumnDefault( "true" )
+    public Boolean active;
+
     public void setPassword( String password ) {
         this.password = BcryptUtil.bcryptHash( password );
     }
@@ -47,6 +51,7 @@ public class User implements IdProvider {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", roles='" + roles + '\'' +
+                ", active='" + active + '\'' +
                 '}';
     }
 
@@ -55,6 +60,7 @@ public class User implements IdProvider {
         user.setName( username );
         user.setPassword( password );
         user.setRoles( roles );
+        user.setActive( true );
         return user;
     }
 

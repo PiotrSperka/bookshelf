@@ -40,8 +40,13 @@ public class AuthServiceImpl implements AuthService {
 
         var user = userRepository.getUserByUsername( username );
         if ( user != null && user.isPasswordMatching( password ) ) {
-            logService.add( "User '" + username + "' authenticated successfully", "system" );
-            return getJwtToken( user );
+            if ( user.getActive() ) {
+                logService.add( "User '" + username + "' authenticated successfully", "system" );
+                return getJwtToken( user );
+            } else {
+                logService.add( "User '" + username + "' is inactive and cannot be logged in", "system" );
+                return null;
+            }
         }
 
         logService.add( "Failed to authenticate user '" + username + "'", "system" );
@@ -68,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
     public String refresh( String token ) {
         var jwt = Jwts.parserBuilder().setSigningKey( SigningKey.getKey() ).build().parseClaimsJws( token );
         var user = userRepository.getUserByUsername( jwt.getBody().getSubject() );
-        if ( user != null ) {
+        if ( user != null && user.getActive() ) {
             if ( jwt.getBody().getExpiration().toInstant().isBefore( Instant.now().plus( 5, ChronoUnit.MINUTES ) ) ) {
                 blacklist( token );
                 return getJwtToken( user );
