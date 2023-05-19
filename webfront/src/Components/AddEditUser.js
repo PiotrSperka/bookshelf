@@ -95,9 +95,9 @@ const AddEditUser = props => {
     }
 
     return (
-        <Dialog open={ props.open }>
+        <Dialog className={ styles.dialog } open={ props.open }>
             <DialogTitle><FormattedMessage id="user-dialog.dialog-title"/></DialogTitle>
-            <form className={ "form" } onSubmit={ submitUser }>
+            <form className={ styles.form } onSubmit={ submitUser }>
                 { saveApi.error && <Alert severity={ "error" }>{ "Error: " + saveApi.error }</Alert> }
                 <TextField name={ "name" } value={ formData.name } label={ <FormattedMessage id="user-dialog.name"/> }
                            variant={ "standard" }
@@ -112,9 +112,9 @@ const AddEditUser = props => {
                 <FormControlLabel control={ <Checkbox defaultChecked/> }
                                   label={ <FormattedMessage id="user-dialog.active"/> } name={ "active" }
                                   checked={ formData.active } disabled={ selfEditing } onChange={ onActiveChange }/>
-                <Button className="submitButton" variant={ "contained" } type={ "submit" }><FormattedMessage
+                <Button className={ styles.submitButton } variant={ "contained" } type={ "submit" }><FormattedMessage
                     id="user-dialog.save"/></Button>
-                <Button className="closeButton" variant={ "outlined" } type={ "button" }
+                <Button className={ styles.closeButton } variant={ "outlined" } type={ "button" }
                         onClick={ cancelDialog }><FormattedMessage id="user-dialog.cancel"/></Button>
             </form>
             <Backdrop open={ saveApi.loading }>

@@ -1,4 +1,4 @@
-import "./Login.css"
+import styles from "./Login.module.css"
 import { Alert, Backdrop, Button, CircularProgress, Dialog, DialogTitle, TextField } from "@mui/material";
 import { DoLogin } from "../Services/LoginService";
 import { useUserContext } from "../UserContextProvider";
@@ -26,7 +26,7 @@ const Login = () => {
                     const userInfo = await userInfoResult.json();
                     setLoginFailed( false );
                     setUserInfo( { ...userInfo, token: result } );
-                } ).catch( err => {
+                } ).catch( () => {
                     setLoginFailed( true );
                 } )
             } else {
@@ -38,15 +38,15 @@ const Login = () => {
     }
 
     return (
-        <Dialog open={ !isLoggedIn() }>
+        <Dialog className={styles.dialog} open={ !isLoggedIn() }>
             <DialogTitle><FormattedMessage id="login.dialog-title"/></DialogTitle>
-            <form className="form" onSubmit={ formSubmitted }>
+            <form className={styles.form} onSubmit={ formSubmitted }>
                 { loginFailed && <Alert severity={ "error" }>Wrong login or password!</Alert> }
                 <TextField name={ "username" } label={ <FormattedMessage id="login.login"/> } variant={ "standard" }/>
                 <TextField name={ "password" } label={ <FormattedMessage id="login.password"/> } type={ "password" }
                            variant={ "standard" }
                            autoComplete={ "current-password" }/>
-                <Button className="submitButton" variant={ "contained" } type={ "submit" }
+                <Button className={styles.submitButton} variant={ "contained" } type={ "submit" }
                         startIcon={ <LoginIcon/> }><FormattedMessage id="login.login-button"/></Button>
             </form>
             <Backdrop open={ processing }>

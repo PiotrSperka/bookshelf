@@ -44,7 +44,7 @@ const BookGrid = () => {
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState( false );
     const [ selectedBookId, setSelectedBookId ] = useState( null );
 
-    const {isLoggedIn} = useUserContext();
+    const { isLoggedIn } = useUserContext();
 
     const locale = navigator.language.split( /[-_]/ )[ 0 ];
     const dataGridLocalization = locale === 'pl' ? plPL.components.MuiDataGrid.defaultProps.localeText : enUS.components.MuiDataGrid.defaultProps.localeText;
@@ -106,9 +106,12 @@ const BookGrid = () => {
     }
 
     const loadBooks = () => {
-        if (isLoggedIn()) {
+        if ( isLoggedIn() ) {
             getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters ) )
             getBooksCountApi.request( getBooksCountParams( filters ) )
+        } else {
+            setBooks( [] );
+            setRowCountState( 0 );
         }
     }
 
@@ -116,7 +119,7 @@ const BookGrid = () => {
         <AddEditBook open={ addDialogOpen } bookId={ null } onClose={ handleBooksChanged }/>
         <AddEditBook open={ editDialogOpen } bookId={ selectedBookId } onClose={ handleBooksChanged }/>
         <DeleteBook open={ deleteDialogOpen } bookId={ selectedBookId } onClose={ handleBooksChanged }/>
-        <Box style={ { "padding-bottom": "10px" } }>
+        <Box>
             <Button className={ styles.button } variant={ "contained" } startIcon={ <AddIcon/> } onClick={ () => {
                 setAddDialogOpen( true );
             } }><FormattedMessage id="book-grid.add"/></Button>
@@ -127,7 +130,8 @@ const BookGrid = () => {
             <Button className={ styles.button } variant={ "outlined" } startIcon={ <DeleteIcon/> } color={ "error" }
                     disabled={ selectedBookId === null } onClick={ () => setDeleteDialogOpen( true ) }><FormattedMessage
                 id="book-grid.delete"/></Button>
-            <Button className={ styles.button } variant={ "outlined" } startIcon={ <RefreshIcon/> } onClick={() => handleBooksChanged(true)}><FormattedMessage
+            <Button className={ styles.button } variant={ "outlined" } startIcon={ <RefreshIcon/> }
+                    onClick={ () => handleBooksChanged( true ) }><FormattedMessage
                 id="book-grid.refresh"/></Button>
         </Box>
         <BookFilters onFilterChanged={ filterChanged }/>
@@ -149,7 +153,13 @@ const BookGrid = () => {
                   onSortModelChange={ setSortModel }
                   sortingMode="server"
                   getRowId={ ( row ) => row.remoteId }
-                  rowHeight={ 30 }
+                  getRowHeight={ () => 'auto' }
+                  density="compact"
+                  sx={ {
+                      '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
+                      '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
+                      '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
+                  } }
                   disableColumnMenu={ true }/>
     </div> );
 }

@@ -9,6 +9,7 @@
     margin-top: 20px;
 }
 
-.button {
-    margin-right: 10px !important;
+.button:global(.MuiButtonBase-root) {
+    margin-right: 10px;
+    margin-bottom: 10px;
 }

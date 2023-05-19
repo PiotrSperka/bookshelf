@@ -14,7 +14,3 @@
 .form .submitButton:global(.MuiButtonBase-root) {
     margin-top: 50px;
 }
-
-.closeButton:global(.MuiButtonBase-root) {
-    margin-top: 10px;
-}
