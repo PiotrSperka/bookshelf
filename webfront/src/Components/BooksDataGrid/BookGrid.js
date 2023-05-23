@@ -1,47 +1,46 @@
 import styles from "./BookGrid.module.css"
-import { DataGrid, plPL, enUS } from "@mui/x-data-grid"
+import { DataGrid, enUS, plPL } from "@mui/x-data-grid"
 import { useEffect, useState } from "react";
 import BookFilters from "./BookFilters";
-import { Box, Button } from "@mui/material";
-import AddEditBook from "./AddEditBook";
-import DeleteBook from "./DeleteBook";
-import AddIcon from "@mui/icons-material/Add"
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { FormattedMessage } from "react-intl";
-import { useApi } from "../Services/GenericServiceHook";
-import { getBooksCountParams, getBooksPageParams } from "../Services/BooksApi";
-import { useUserContext } from "../UserContextProvider";
+import { useIntl } from "react-intl";
+import { useApi } from "../../Services/GenericServiceHook";
+import { getBooksCountParams, getBooksPageParams } from "../../Services/BooksApi";
+import { useUserContext } from "../../UserContextProvider";
+import BookGridButtons from "./BookGridButtons";
 
 const BookGrid = () => {
+    const intl = useIntl();
     const [ books, setBooks ] = useState( [] );
     const cols = [ {
         field: 'author',
-        headerName: <FormattedMessage id="book-grid.author"/>,
+        headerName: intl.formatMessage( { id: "book-grid.author" } ),
         minWidth: 200,
         flex: 0.5
     }, {
         field: 'title',
-        headerName: <FormattedMessage id="book-grid.title"/>,
+        headerName: intl.formatMessage( { id: "book-grid.title" } ),
         minWidth: 200,
         flex: 1
-    }, { field: 'released', headerName: <FormattedMessage id="book-grid.release"/>, width: 200 }, {
+    }, { field: 'released', headerName: intl.formatMessage( { id: "book-grid.release" } ), width: 200 }, {
         field: 'signature',
-        headerName: <FormattedMessage id="book-grid.signature"/>
+        headerName: intl.formatMessage( { id: "book-grid.signature" } )
     } ];
 
     const [ paginationModel, setPaginationModel ] = useState( { page: 0, pageSize: 15 } );
     const [ rowCountState, setRowCountState ] = useState( 0 );
     const [ isLoading, setIsLoading ] = useState( false );
-    const [ filters, setFilters ] = useState( { sortField: "author", sortDirection: "asc", author: "", title: "", release: "", signature: "" } );
+    const [ filters, setFilters ] = useState( {
+        sortField: "author",
+        sortDirection: "asc",
+        author: "",
+        title: "",
+        release: "",
+        signature: ""
+    } );
 
     const getBooksPageApi = useApi();
     const getBooksCountApi = useApi();
 
-    const [ addDialogOpen, setAddDialogOpen ] = useState( false );
-    const [ editDialogOpen, setEditDialogOpen ] = useState( false );
-    const [ deleteDialogOpen, setDeleteDialogOpen ] = useState( false );
     const [ selectedBookId, setSelectedBookId ] = useState( null );
 
     const { isLoggedIn } = useUserContext();
@@ -96,15 +95,6 @@ const BookGrid = () => {
         }
     }
 
-    const handleBooksChanged = refresh => {
-        setAddDialogOpen( false );
-        setEditDialogOpen( false );
-        setDeleteDialogOpen( false );
-        if ( refresh === true ) {
-            loadBooks()
-        }
-    }
-
     const loadBooks = () => {
         if ( isLoggedIn() ) {
             getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters ) )
@@ -116,26 +106,9 @@ const BookGrid = () => {
     }
 
     return ( <div className={ styles.main }>
-        <AddEditBook open={ addDialogOpen } bookId={ null } onClose={ handleBooksChanged }/>
-        <AddEditBook open={ editDialogOpen } bookId={ selectedBookId } onClose={ handleBooksChanged }/>
-        <DeleteBook open={ deleteDialogOpen } bookId={ selectedBookId } onClose={ handleBooksChanged }/>
-        <Box>
-            <Button className={ styles.button } variant={ "contained" } startIcon={ <AddIcon/> } onClick={ () => {
-                setAddDialogOpen( true );
-            } }><FormattedMessage id="book-grid.add"/></Button>
-            <Button className={ styles.button } variant={ "outlined" } startIcon={ <EditIcon/> }
-                    disabled={ selectedBookId === null } onClick={ () => {
-                setEditDialogOpen( true );
-            } }><FormattedMessage id="book-grid.edit"/></Button>
-            <Button className={ styles.button } variant={ "outlined" } startIcon={ <DeleteIcon/> } color={ "error" }
-                    disabled={ selectedBookId === null } onClick={ () => setDeleteDialogOpen( true ) }><FormattedMessage
-                id="book-grid.delete"/></Button>
-            <Button className={ styles.button } variant={ "outlined" } startIcon={ <RefreshIcon/> }
-                    onClick={ () => handleBooksChanged( true ) }><FormattedMessage
-                id="book-grid.refresh"/></Button>
-        </Box>
+        <BookGridButtons selectedBookId={ selectedBookId } onBooksChanged={ loadBooks }/>
         <BookFilters onFilterChanged={ filterChanged }/>
-        <DataGrid className={ styles.dataGrid } columns={ cols } rows={ books } autoHeight="true"
+        <DataGrid className={ styles.dataGrid } columns={ cols } rows={ books } autoHeight={ true }
                   rowCount={ rowCountState }
                   localeText={ dataGridLocalization }
                   initialState={ {

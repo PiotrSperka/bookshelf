@@ -38,15 +38,15 @@ const Login = () => {
     }
 
     return (
-        <Dialog className={styles.dialog} open={ !isLoggedIn() }>
+        <Dialog className={ styles.dialog } open={ !isLoggedIn() }>
             <DialogTitle><FormattedMessage id="login.dialog-title"/></DialogTitle>
-            <form className={styles.form} onSubmit={ formSubmitted }>
+            <form className={ styles.form } onSubmit={ formSubmitted }>
                 { loginFailed && <Alert severity={ "error" }>Wrong login or password!</Alert> }
                 <TextField name={ "username" } label={ <FormattedMessage id="login.login"/> } variant={ "standard" }/>
                 <TextField name={ "password" } label={ <FormattedMessage id="login.password"/> } type={ "password" }
                            variant={ "standard" }
                            autoComplete={ "current-password" }/>
-                <Button className={styles.submitButton} variant={ "contained" } type={ "submit" }
+                <Button className={ styles.submitButton } variant={ "contained" } type={ "submit" }
                         startIcon={ <LoginIcon/> }><FormattedMessage id="login.login-button"/></Button>
             </form>
             <Backdrop open={ processing }>

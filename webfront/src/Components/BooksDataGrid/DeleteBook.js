@@ -1,7 +1,7 @@
-import "./DeleteBook.css"
+import "./DeleteBook.module.css"
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { useApi } from "../Services/GenericServiceHook";
-import { getDeleteSingleBookParams } from "../Services/BooksApi";
+import { useApi } from "../../Services/GenericServiceHook";
+import { getDeleteSingleBookParams } from "../../Services/BooksApi";
 import { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 

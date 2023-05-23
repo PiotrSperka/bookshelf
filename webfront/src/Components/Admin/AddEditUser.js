@@ -2,24 +2,25 @@ import styles from "./AddEditUser.module.css"
 import {
     Alert,
     Backdrop,
-    Button, Checkbox,
+    Button,
+    Checkbox,
     CircularProgress,
     Dialog,
     DialogTitle,
     FormControlLabel,
     TextField
 } from "@mui/material";
-import { useApi } from "../Services/GenericServiceHook";
+import { useApi } from "../../Services/GenericServiceHook";
 import { useEffect, useState } from "react";
-import { addUserParams, editUserParams, getUserParams } from "../Services/UserApi";
-import { useUserContext } from "../UserContextProvider";
+import { addUserParams, editUserParams, getUserParams } from "../../Services/UserApi";
+import { useUserContext } from "../../UserContextProvider";
 import { FormattedMessage } from "react-intl";
 
 const AddEditUser = props => {
     const { user } = useUserContext();
     const saveApi = useApi()
     const getUserApi = useApi()
-    const [ formData, setFormData ] = useState( { id: null, name: "", roles: "", password: "", active: false } );
+    const [ formData, setFormData ] = useState( { id: null, name: "", roles: "", password: "", active: true } );
     const [ selfEditing, setSelfEditing ] = useState( false );
 
     useEffect( () => {
@@ -56,7 +57,7 @@ const AddEditUser = props => {
     }, [ saveApi.error, saveApi.loading ] )
 
     const resetForm = () => {
-        setFormData( { id: null, name: "", roles: "", password: "", active: false } );
+        setFormData( { id: null, name: "", roles: "", password: "", active: true } );
     }
 
     const submitUser = event => {
@@ -109,7 +110,7 @@ const AddEditUser = props => {
                 <TextField name={ "roles" } value={ formData.roles }
                            label={ <FormattedMessage id="user-dialog.roles"/> } variant={ "standard" }
                            onChange={ onRolesChange }/>
-                <FormControlLabel control={ <Checkbox defaultChecked/> }
+                <FormControlLabel control={ <Checkbox/> }
                                   label={ <FormattedMessage id="user-dialog.active"/> } name={ "active" }
                                   checked={ formData.active } disabled={ selfEditing } onChange={ onActiveChange }/>
                 <Button className={ styles.submitButton } variant={ "contained" } type={ "submit" }><FormattedMessage

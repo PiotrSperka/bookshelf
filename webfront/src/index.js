@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 // import reportWebVitals from './reportWebVitals';
 import { UserContextProvider } from "./UserContextProvider";
-import { FormattedMessage, IntlProvider } from "react-intl";
+import { IntlProvider } from "react-intl";
 import messages_en from "./Translations/en.json"
 import messages_pl from "./Translations/pl.json"
 

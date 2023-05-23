@@ -2,37 +2,38 @@ import styles from "./SystemAdmin.module.css"
 import { Box, Button, Card, CardContent, Chip, Typography } from "@mui/material";
 import { DataGrid, enUS, plPL } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
-import { useApi } from "../Services/GenericServiceHook";
+import { useApi } from "../../Services/GenericServiceHook";
 import { useEffect, useState } from "react";
-import { getAllUsersParams } from "../Services/UserApi";
+import { getAllUsersParams } from "../../Services/UserApi";
 import AddEditUser from "./AddEditUser";
 import DeleteUser from "./DeleteUser";
-import { useUserContext } from "../UserContextProvider";
+import { useUserContext } from "../../UserContextProvider";
 import { useNavigate } from "react-router-dom";
-import { FormattedMessage } from "react-intl";
-import LogsGrid from "./Admin/LogsGrid";
+import { FormattedMessage, useIntl } from "react-intl";
+import LogsGrid from "./LogsGrid";
 
 const SystemAdmin = () => {
+    const intl = useIntl();
     const cols = [ {
         field: 'name',
-        headerName: <FormattedMessage id="admin.users-management.name"/>,
+        headerName: intl.formatMessage( { id: "admin.users-management.name" } ),
         minWidth: 200,
-        flex: 0.5
+        flex: 1
     }, {
         field: 'roles',
-        headerName: <FormattedMessage id="admin.users-management.roles"/>,
+        headerName: intl.formatMessage( { id: "admin.users-management.roles" } ),
         minWidth: 200,
         flex: 1,
         renderCell: params => {
             if ( params.row[ params.field ] instanceof Array ) {
-                return params.row[ params.field ].map( ( role ) => <Chip label={ role } color={ "primary" }
+                return params.row[ params.field ].map( ( role ) => <Chip key={ role } label={ role } color={ "primary" }
                                                                          sx={ { marginRight: "3px" } }/> );
             }
         }
     }, {
         field: 'active',
-        headerName: <FormattedMessage id="admin.users-management.active"/>,
-        width: 100,
+        headerName: intl.formatMessage( { id: "admin.users-management.active" } ),
+        width: 150,
         renderCell: params => {
             if ( params.row[ params.field ] === true ) {
                 return ( <Chip label={ <FormattedMessage id="admin.users-management.enabled"/> } color="success"/> )
@@ -136,7 +137,7 @@ const SystemAdmin = () => {
                     <Typography gutterBottom variant={ "h5" } component={ "div" }>
                         <FormattedMessage id="admin.logs"/>
                     </Typography>
-                    <LogsGrid />
+                    <LogsGrid/>
                 </CardContent>
             </Card>
         </Box>

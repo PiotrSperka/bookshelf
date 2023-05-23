@@ -1,8 +1,8 @@
 import styles from "./AddEditBook.module.css"
 import { Alert, Backdrop, Button, CircularProgress, Dialog, DialogTitle, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useApi } from "../Services/GenericServiceHook";
-import { getGetSingleBookParams, getSaveBookParams } from "../Services/BooksApi";
+import { useApi } from "../../Services/GenericServiceHook";
+import { getGetSingleBookParams, getSaveBookParams } from "../../Services/BooksApi";
 import { FormattedMessage } from "react-intl";
 
 const AddEditBook = props => {

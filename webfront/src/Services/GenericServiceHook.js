@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUserContext } from "../UserContextProvider";
 
 const getHeaders = ( userContext, explicitToken ) => {
-    const token = ( explicitToken != null ) ? explicitToken : (userContext != null) ? userContext.token : null;
+    const token = ( explicitToken != null ) ? explicitToken : ( userContext != null ) ? userContext.token : null;
     if ( token ) {
         return { "Content-Type": "application/json", "Authorization": "Bearer " + token };
     } else {

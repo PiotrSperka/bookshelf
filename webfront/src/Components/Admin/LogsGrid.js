@@ -2,24 +2,25 @@ import styles from "./LogsGrid.module.css"
 import { useEffect, useState } from "react";
 import { useApi } from "../../Services/GenericServiceHook";
 import { DataGrid, enUS, plPL } from "@mui/x-data-grid";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 import { useUserContext } from "../../UserContextProvider";
 import { getLogsCountParams, getLogsPageParams } from "../../Services/LogsApi";
 
 const LogsGrid = () => {
+    const intl = useIntl();
     const logsCols = [ {
         field: 'username',
-        headerName: <FormattedMessage id="admin.logs.name"/>,
+        headerName: intl.formatMessage( { id: "admin.logs.name" } ),
         minWidth: 200,
         flex: 0.25
     }, {
         field: 'date',
-        headerName: <FormattedMessage id="admin.logs.date"/>,
+        headerName: intl.formatMessage( { id: "admin.logs.date" } ),
         minWidth: 200,
         flex: 0.25
     }, {
         field: 'log',
-        headerName: <FormattedMessage id="admin.logs.log"/>,
+        headerName: intl.formatMessage( { id: "admin.logs.log" } ),
         minWidth: 200,
         flex: 1
     } ];
