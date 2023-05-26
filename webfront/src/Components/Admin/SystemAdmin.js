@@ -1,9 +1,10 @@
 import styles from "./SystemAdmin.module.css"
-import { Box, Button, Card, CardContent, Chip, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Chip, Tab, Tabs } from "@mui/material";
 import { DataGrid, enUS, plPL } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import { useApi } from "../../Services/GenericServiceHook";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getAllUsersParams } from "../../Services/UserApi";
 import AddEditUser from "./AddEditUser";
 import DeleteUser from "./DeleteUser";
@@ -11,6 +12,8 @@ import { useUserContext } from "../../UserContextProvider";
 import { useNavigate } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import LogsGrid from "./LogsGrid";
+import BookGrid from "../BooksDataGrid/BookGrid";
+import RestoreBook from "./RestoreBook";
 
 const SystemAdmin = () => {
     const intl = useIntl();
@@ -73,11 +76,16 @@ const SystemAdmin = () => {
     const { user, hasRole, isLoggedIn } = useUserContext();
     const navigate = useNavigate();
     const getUsersApi = useApi();
-    const deleteUserApi = useApi();
     const [ editUserId, setEditUserId ] = useState( null );
     const [ userDialogVisible, setUserDialogVisible ] = useState( false );
     const [ deleteDialogVisible, setDeleteDialogVisible ] = useState( false );
     const [ users, setUsers ] = useState( [] );
+    const [ selectedDeletedBookId, setSelectedDeletedBookId ] = useState( null );
+    const [ restoreBookDialogVisible, setRestoreBookDialogVisible ] = useState( false );
+
+    const deletedBooksGrid = useRef();
+
+    const [ tabValue, setTabValue ] = useState( 0 );
 
     const locale = navigator.language.split( /[-_]/ )[ 0 ];
     const dataGridLocalization = locale === 'pl' ? plPL.components.MuiDataGrid.defaultProps.localeText : enUS.components.MuiDataGrid.defaultProps.localeText;
@@ -97,10 +105,6 @@ const SystemAdmin = () => {
         }
     }, [ getUsersApi.data ] )
 
-    useEffect( () => {
-        getUsersApi.request( getAllUsersParams() );
-    }, [ deleteUserApi.data ] )
-
     const onUserDialogClose = () => {
         setUserDialogVisible( false );
         getUsersApi.request( getAllUsersParams() );
@@ -116,30 +120,50 @@ const SystemAdmin = () => {
         setUserDialogVisible( true );
     }
 
+    const onRevertDialogClose = () => {
+        setRestoreBookDialogVisible( false );
+        if ( deletedBooksGrid.current !== undefined ) {
+            deletedBooksGrid.current.refresh();
+        }
+    }
+
     return (
         <Box className={ styles.main }>
             <AddEditUser userId={ editUserId } open={ userDialogVisible } onClose={ onUserDialogClose }/>
             <DeleteUser userId={ editUserId } open={ deleteDialogVisible } onClose={ onDeleteDialogClose }/>
-            <Card className={ styles.cardFullWidth }>
+            <RestoreBook bookId={ selectedDeletedBookId } open={ restoreBookDialogVisible }
+                         onClose={ onRevertDialogClose }/>
+            <Box sx={ { borderBottom: 1, borderColor: 'divider' } }>
+                <Tabs value={ tabValue } onChange={ ( e, val ) => setTabValue( val ) }>
+                    <Tab label={ <FormattedMessage id="admin.users-management"/> }/>
+                    <Tab label={ <FormattedMessage id="admin.logs"/> }/>
+                    <Tab label={ <FormattedMessage id="admin.deleted-books"/> }/>
+                </Tabs>
+            </Box>
+            { tabValue === 0 && <Card className={ styles.cardFullWidth }>
                 <CardContent>
-                    <Typography gutterBottom variant={ "h5" } component={ "div" }>
-                        <FormattedMessage id="admin.users-management"/>
-                    </Typography>
                     <Button className={ "button" } variant={ "contained" } startIcon={ <AddIcon/> }
                             onClick={ onAddUserClick }><FormattedMessage id="admin.users-management.add-user"/></Button>
                     <DataGrid className={ styles.dataGrid } columns={ cols } rows={ users } autoHeight={ true }
                               localeText={ dataGridLocalization } disableColumnMenu={ true }
                               rowCount={ users.length } getRowId={ ( row ) => row.id }/>
                 </CardContent>
-            </Card>
-            <Card className={ styles.cardFullWidth }>
+            </Card> }
+            { tabValue === 1 && <Card className={ styles.cardFullWidth }>
                 <CardContent>
-                    <Typography gutterBottom variant={ "h5" } component={ "div" }>
-                        <FormattedMessage id="admin.logs"/>
-                    </Typography>
                     <LogsGrid/>
                 </CardContent>
-            </Card>
+            </Card> }
+            { tabValue === 2 && <Card className={ styles.cardFullWidth }>
+                <CardContent>
+                    <Button className={ "button" } variant={ "contained" } startIcon={ <SettingsBackupRestoreIcon/> }
+                            onClick={ () => setRestoreBookDialogVisible( true ) }
+                            disabled={ selectedDeletedBookId === null }><FormattedMessage
+                        id="admin.deleted-books.revert"/></Button>
+                    <BookGrid ref={ deletedBooksGrid } hideButtons={ true } deleted={ true }
+                              onBookSelectionChanged={ id => setSelectedDeletedBookId( id ) }/>
+                </CardContent>
+            </Card> }
         </Box>
     )
 }

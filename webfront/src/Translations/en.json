@@ -48,6 +48,12 @@
   "admin.logs.name": "Name",
   "admin.logs.date": "Date",
   "admin.logs.log": "Log",
+  "admin.deleted-books": "Deleted books",
+  "admin.deleted-books.revert": "Restore",
+  "restore-book.dialog-title": "Confirm",
+  "restore-book.question": "Do you want to restore selected book?",
+  "restore-book.yes": "Yes",
+  "restore-book.no": "No",
   "book-grid.author": "Author",
   "book-grid.title": "Title",
   "book-grid.release": "Release",
@@ -61,5 +67,9 @@
   "user-settings.current-password": "Current password",
   "user-settings.new-password": "New password",
   "user-settings.retype-new-password": "Retype new password",
-  "user-settings.change-password-button": "Change password"
+  "user-settings.change-password-button": "Change password",
+  "books.error.author-may-not-be-blank": "Author must not be blank",
+  "books.error.title-may-not-be-blank": "Title must not be blank",
+  "books.error.release-may-not-be-blank": "Release must not be blank",
+  "books.error.signature-may-not-be-blank": "Signature must not be blank"
 }

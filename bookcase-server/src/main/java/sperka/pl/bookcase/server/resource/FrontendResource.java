@@ -27,15 +27,21 @@ public class FrontendResource {
     @GET
     @Path( "/{fileName:.+}" )
     public Response getFrontendStaticFile( @PathParam( "fileName" ) String fileName ) throws IOException {
-        final InputStream requestedFileStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName );
-        final InputStream inputStream = requestedFileStream != null ?
-                requestedFileStream :
-                FrontendResource.class.getResourceAsStream( FALLBACK_RESOURCE );
+        final InputStream inputStream;
+        try ( InputStream requestedFileStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName ) ) {
+            inputStream = requestedFileStream != null ?
+                    requestedFileStream :
+                    FrontendResource.class.getResourceAsStream( FALLBACK_RESOURCE );
+        }
         final StreamingOutput streamingOutput = outputStream -> IOUtils.copy( inputStream, outputStream );
-        return Response
-                .ok( streamingOutput )
-                .cacheControl( CacheControl.valueOf( "max-age=900" ) )
-                .type( URLConnection.guessContentTypeFromStream( inputStream ) )
-                .build();
+        if ( inputStream != null ) {
+            return Response
+                    .ok( streamingOutput )
+                    .cacheControl( CacheControl.valueOf( "max-age=900" ) )
+                    .type( URLConnection.guessContentTypeFromStream( inputStream ) )
+                    .build();
+        } else {
+            return Response.status( Response.Status.NOT_FOUND ).build();
+        }
     }
 }

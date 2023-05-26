@@ -45,13 +45,13 @@ public class BookRepositoryImpl extends BasicRepositoryImpl< Book > implements B
     }
 
     @Override
-    public List< Book > getPaginated( int page, int perPage, BookFilterDto filters ) {
+    public List< Book > getPaginated( int page, int perPage, BookFilterDto filters, boolean deleted ) {
         var criteriaBuilder = entityManager.getCriteriaBuilder();
         var criteriaQuery = criteriaBuilder.createQuery( Book.class );
         var rootEntry = criteriaQuery.from( Book.class );
 
         criteriaQuery.select( rootEntry );
-        Predicate whereCriteria = getFilterPredicate( filters, rootEntry );
+        Predicate whereCriteria = getFilterPredicate( filters, rootEntry, deleted );
 
         criteriaQuery.where( whereCriteria );
         if ( filters.getSortField() != null && !filters.getSortField().isEmpty() ) {
@@ -64,14 +64,14 @@ public class BookRepositoryImpl extends BasicRepositoryImpl< Book > implements B
 
         var query = entityManager.createQuery( criteriaQuery );
         query.setMaxResults( perPage );
-        query.setFirstResult( (page - 1) * perPage );
+        query.setFirstResult( ( page - 1 ) * perPage );
 
         return query.getResultList();
     }
 
-    private Predicate getFilterPredicate( BookFilterDto filters, Root< Book > rootEntry ) {
+    private Predicate getFilterPredicate( BookFilterDto filters, Root< Book > rootEntry, boolean deleted ) {
         var criteriaBuilder = entityManager.getCriteriaBuilder();
-        var whereCriteria = criteriaBuilder.equal( rootEntry.get( "deleted" ), false );
+        var whereCriteria = criteriaBuilder.equal( rootEntry.get( "deleted" ), deleted );
 
         if ( filters != null && filters.getAuthor() != null ) {
             whereCriteria = criteriaBuilder.and( whereCriteria, criteriaBuilder.like( criteriaBuilder.lower( rootEntry.get( "author" ) ), "%" + filters.getAuthor().toLowerCase() + "%" ) );
@@ -89,13 +89,13 @@ public class BookRepositoryImpl extends BasicRepositoryImpl< Book > implements B
     }
 
     @Override
-    public Long getCountFiltered( BookFilterDto filters ) {
+    public Long getCountFiltered( BookFilterDto filters, boolean deleted ) {
         var criteriaBuilder = entityManager.getCriteriaBuilder();
         var criteriaQuery = criteriaBuilder.createQuery( Long.class );
         var rootEntry = criteriaQuery.from( Book.class );
 
         criteriaQuery.select( criteriaBuilder.count( rootEntry ) );
-        Predicate whereCriteria = getFilterPredicate( filters, rootEntry );
+        Predicate whereCriteria = getFilterPredicate( filters, rootEntry, deleted );
 
         criteriaQuery.where( whereCriteria );
 

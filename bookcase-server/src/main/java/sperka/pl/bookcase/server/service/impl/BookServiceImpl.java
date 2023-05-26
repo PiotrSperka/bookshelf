@@ -3,13 +3,14 @@ package sperka.pl.bookcase.server.service.impl;
 import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.dto.BookFilterDto;
 import sperka.pl.bookcase.server.entity.Book;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
 import sperka.pl.bookcase.server.repository.BookRepository;
 import sperka.pl.bookcase.server.service.BookService;
 import sperka.pl.bookcase.server.service.LogService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.transaction.Transactional;
-import javax.validation.Valid;
+import javax.validation.Validator;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +20,12 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final LogService logService;
 
-    public BookServiceImpl( BookRepository bookRepository, LogService logService ) {
+    private final Validator validator;
+
+    public BookServiceImpl( BookRepository bookRepository, LogService logService, Validator validator ) {
         this.bookRepository = bookRepository;
         this.logService = logService;
+        this.validator = validator;
     }
 
     @Override
@@ -30,13 +34,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List< BookDto > getPaginated( int page, int perPage, BookFilterDto filters ) {
-        return bookRepository.getPaginated( page, perPage, filters ).stream().map( Book::toDto ).collect( Collectors.toList() );
+    public List< BookDto > getPaginated( int page, int perPage, BookFilterDto filters, boolean deleted ) {
+        return bookRepository.getPaginated( page, perPage, filters, deleted ).stream().map( Book::toDto ).collect( Collectors.toList() );
     }
 
     @Override
-    public Long getCount( BookFilterDto filters ) {
-        return bookRepository.getCountFiltered( filters );
+    public Long getCount( BookFilterDto filters, boolean deleted ) {
+        return bookRepository.getCountFiltered( filters, deleted );
     }
 
     @Override
@@ -51,7 +55,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookDto save( @Valid BookDto dto ) {
+    public BookDto save( BookDto dto ) {
+        var validationException = new ValidationException();
+
+        for ( var violation : validator.validate( dto ) ) {
+            validationException.addViolation( violation.getPropertyPath().toString(), violation.getMessage() );
+        }
+
+        if ( !validationException.isEmpty() ) {
+            throw validationException;
+        }
+
         Book entity;
         if ( dto.getRemoteId() != null ) {
             entity = bookRepository.getById( dto.getRemoteId() );
@@ -79,5 +93,22 @@ public class BookServiceImpl implements BookService {
     public void delete( Long id ) {
         bookRepository.delete( id );
         logService.add( "Deleted book id = " + id, "system" );
+    }
+
+    @Override
+    @Transactional
+    public boolean restore( Long id ) {
+        var book = bookRepository.getById( id );
+        if ( book != null && book.getDeleted() ) {
+            book.setDeleted( false );
+            book.setModifyDate( Instant.now() );
+            book = bookRepository.save( book );
+
+            logService.add( "Restored " + book.toString(), "system" );
+
+            return true;
+        }
+
+        return false;
     }
 }

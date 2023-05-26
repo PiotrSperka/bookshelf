@@ -1,6 +1,6 @@
 import styles from "./BookGrid.module.css"
 import { DataGrid, enUS, plPL } from "@mui/x-data-grid"
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import BookFilters from "./BookFilters";
 import { useIntl } from "react-intl";
 import { useApi } from "../../Services/GenericServiceHook";
@@ -8,7 +8,13 @@ import { getBooksCountParams, getBooksPageParams } from "../../Services/BooksApi
 import { useUserContext } from "../../UserContextProvider";
 import BookGridButtons from "./BookGridButtons";
 
-const BookGrid = () => {
+const BookGrid = forwardRef( ( props, ref ) => {
+    useImperativeHandle( ref, () => ( {
+        refresh() {
+            loadBooks();
+        }
+    } ) );
+
     const intl = useIntl();
     const [ books, setBooks ] = useState( [] );
     const cols = [ {
@@ -88,17 +94,17 @@ const BookGrid = () => {
     }
 
     const rowSelectionChanged = model => {
-        if ( model.length > 0 ) {
-            setSelectedBookId( model[ 0 ] );
-        } else {
-            setSelectedBookId( null );
+        const selectedId = model.length > 0 ? model[ 0 ] : null;
+        setSelectedBookId( selectedId );
+        if ( props.onBookSelectionChanged !== undefined && props.onBookSelectionChanged !== null ) {
+            props.onBookSelectionChanged( selectedId );
         }
     }
 
     const loadBooks = () => {
         if ( isLoggedIn() ) {
-            getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters ) )
-            getBooksCountApi.request( getBooksCountParams( filters ) )
+            getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters, props.deleted ) )
+            getBooksCountApi.request( getBooksCountParams( filters, props.deleted ) )
         } else {
             setBooks( [] );
             setRowCountState( 0 );
@@ -106,7 +112,8 @@ const BookGrid = () => {
     }
 
     return ( <div className={ styles.main }>
-        <BookGridButtons selectedBookId={ selectedBookId } onBooksChanged={ loadBooks }/>
+        { props.hideButtons !== true &&
+            <BookGridButtons selectedBookId={ selectedBookId } onBooksChanged={ loadBooks }/> }
         <BookFilters onFilterChanged={ filterChanged }/>
         <DataGrid className={ styles.dataGrid } columns={ cols } rows={ books } autoHeight={ true }
                   rowCount={ rowCountState }
@@ -135,6 +142,11 @@ const BookGrid = () => {
                   } }
                   disableColumnMenu={ true }/>
     </div> );
+} );
+
+BookGrid.defaultProps = {
+    hideButtons: false,
+    deleted: false,
 }
 
 export default BookGrid;

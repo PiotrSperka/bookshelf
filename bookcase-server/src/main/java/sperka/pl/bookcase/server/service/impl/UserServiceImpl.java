@@ -28,8 +28,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        createUser( "user", "user", Collections.singletonList( "user" ) );
-        createUser( "admin", "admin", Collections.singletonList( "admin" ) );
+        createUser( "admin", "ChangeMe!", Collections.singletonList( "admin" ) );
 
         logService.add( "Initialized users table", "system" );
 

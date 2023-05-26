@@ -15,13 +15,13 @@ import java.time.Instant;
 public class BookDto {
     private Long localId;
     private Long remoteId;
-    @NotBlank(message = "Author may not be blank")
+    @NotBlank(message = "books.error.author-may-not-be-blank")
     private String author;
-    @NotBlank(message = "Title may not be blank")
+    @NotBlank(message = "books.error.title-may-not-be-blank")
     private String title;
-    @NotBlank(message = "Release may not be blank")
+    @NotBlank(message = "books.error.release-may-not-be-blank")
     private String released;
-    @NotBlank(message = "Signature may not be blank")
+    @NotBlank(message = "books.error.signature-may-not-be-blank")
     private String signature;
     private Instant createDate;
     private Instant modifyDate;

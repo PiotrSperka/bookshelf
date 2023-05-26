@@ -3,9 +3,10 @@ import { Alert, Backdrop, Button, CircularProgress, Dialog, DialogTitle, TextFie
 import { useEffect, useState } from "react";
 import { useApi } from "../../Services/GenericServiceHook";
 import { getGetSingleBookParams, getSaveBookParams } from "../../Services/BooksApi";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 const AddEditBook = props => {
+    const intl = useIntl();
     const saveApi = useApi();
     const getBookApi = useApi();
     const [ formData, setFormData ] = useState( {
@@ -15,6 +16,7 @@ const AddEditBook = props => {
         released: "",
         signature: ""
     } );
+    const [ validationErrors, setValidationErrors ] = useState( {} );
 
     const resetForm = () => {
         setFormData( { remoteId: null, author: "", title: "", released: "", signature: "" } );
@@ -45,6 +47,20 @@ const AddEditBook = props => {
             props.onClose( true );
         }
     }, [ saveApi.loading ] )
+
+    useEffect( () => {
+        if ( saveApi.data !== null ) {
+            if ( saveApi.data.status !== 200 ) {
+                saveApi.data.clone().json().then( json => {
+                    setValidationErrors( json );
+                } ).catch( () => {
+                    setValidationErrors( {} );
+                } );
+            } else {
+                setValidationErrors( {} );
+            }
+        }
+    }, [ saveApi.data ] )
 
     const submitBook = event => {
         event.preventDefault();
@@ -81,17 +97,22 @@ const AddEditBook = props => {
         <Dialog className={ styles.dialog } open={ props.open }>
             <DialogTitle><FormattedMessage id="add-book-dialog.dialog-title"/></DialogTitle>
             <form className={ styles.form } onSubmit={ submitBook }>
-                { saveApi.error && <Alert severity={ "error" }>{ "Error: " + saveApi.error }</Alert> }
-                <TextField name={ "author" } value={ formData.author }
+                { saveApi.error && Object.keys( validationErrors ).length === 0 &&
+                    <Alert severity={ "error" }>{ "Error: " + saveApi.error }</Alert> }
+                <TextField name={ "author" } value={ formData.author } error={ 'author' in validationErrors }
+                           helperText={ 'author' in validationErrors && intl.formatMessage( { id: validationErrors[ 'author' ] } ) }
                            label={ <FormattedMessage id="add-book-dialog.author"/> } variant={ "standard" }
                            onChange={ onAuthorChange }/>
-                <TextField name={ "title" } value={ formData.title }
+                <TextField name={ "title" } value={ formData.title } error={ 'title' in validationErrors }
+                           helperText={ 'title' in validationErrors && intl.formatMessage( { id: validationErrors[ 'title' ] } ) }
                            label={ <FormattedMessage id="add-book-dialog.title"/> } variant={ "standard" }
                            onChange={ onTitleChange }/>
-                <TextField name={ "release" } value={ formData.released }
+                <TextField name={ "release" } value={ formData.released } error={ 'released' in validationErrors }
+                           helperText={ 'released' in validationErrors && intl.formatMessage( { id: validationErrors[ 'released' ] } ) }
                            label={ <FormattedMessage id="add-book-dialog.release"/> } variant={ "standard" }
                            onChange={ onReleaseChange }/>
-                <TextField name={ "signature" } value={ formData.signature }
+                <TextField name={ "signature" } value={ formData.signature } error={ 'signature' in validationErrors }
+                           helperText={ 'signature' in validationErrors && intl.formatMessage( { id: validationErrors[ 'signature' ] } ) }
                            label={ <FormattedMessage id="add-book-dialog.signature"/> } variant={ "standard" }
                            onChange={ onSignatureChange }/>
                 <Button className={ styles.submitButton } variant={ "contained" } type={ "submit" }><FormattedMessage

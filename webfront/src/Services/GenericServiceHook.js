@@ -34,6 +34,7 @@ const useApi = () => {
                     setData( result );
                     resolve( result );
                 } else {
+                    setData( result );
                     setError( result.statusText || "Unexpected Error!" );
                     reject( result.statusText || "Unexpected Error!" );
                 }

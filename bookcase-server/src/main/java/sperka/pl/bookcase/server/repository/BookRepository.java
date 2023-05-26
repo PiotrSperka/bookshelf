@@ -16,9 +16,9 @@ public interface BookRepository extends BasicRepository< Book > {
 
     Book getLastModified();
 
-    List< Book > getPaginated( int page, int perPage, BookFilterDto filters );
+    List< Book > getPaginated( int page, int perPage, BookFilterDto filters, boolean deleted );
 
-    Long getCountFiltered( BookFilterDto filters );
+    Long getCountFiltered( BookFilterDto filters, boolean deleted );
 
     Long getCountNotDeleted();
 }

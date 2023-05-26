@@ -27,7 +27,7 @@
   "delete-book.question": "Czy chcesz usunąć wybraną książkę?",
   "delete-book.yes": "Tak",
   "delete-book.no": "Nie",
-  "delete-user.dialog-title": "Potiwerdź",
+  "delete-user.dialog-title": "Potwierdź",
   "delete-user.question": "Czy chcesz usunąć wybranego użytkownika?",
   "delete-user.yes": "Tak",
   "delete-user.no": "Nie",
@@ -48,6 +48,12 @@
   "admin.logs.name": "Użytkownik",
   "admin.logs.date": "Data",
   "admin.logs.log": "Log",
+  "admin.deleted-books": "Usunięte książki",
+  "admin.deleted-books.revert": "Przywróć",
+  "restore-book.dialog-title": "Potwierdź",
+  "restore-book.question": "Czy chcesz przywrócić wybraną książkę?",
+  "restore-book.yes": "Tak",
+  "restore-book.no": "Nie",
   "book-grid.author": "Autor",
   "book-grid.title": "Tytuł",
   "book-grid.release": "Wydanie",
@@ -61,5 +67,9 @@
   "user-settings.current-password": "Aktualne hasło",
   "user-settings.new-password": "Nowe hasło",
   "user-settings.retype-new-password": "Powtórz nowe hasło",
-  "user-settings.change-password-button": "Zmień hasło"
+  "user-settings.change-password-button": "Zmień hasło",
+  "books.error.author-may-not-be-blank": "Autor nie może być pusty",
+  "books.error.title-may-not-be-blank": "Tytuł nie może być pusty",
+  "books.error.release-may-not-be-blank": "Wydanie nie może być puste",
+  "books.error.signature-may-not-be-blank": "Sygnatura nie może być pusta"
 }

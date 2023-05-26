@@ -4,19 +4,17 @@ import sperka.pl.bookcase.server.auth.Roles;
 import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.dto.BookFilterDto;
 import sperka.pl.bookcase.server.dto.GenericResponseDto;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
 import sperka.pl.bookcase.server.service.BookDatabaseSynchronizationService;
 import sperka.pl.bookcase.server.service.BookService;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 @Path( "/api/books" )
@@ -42,7 +40,7 @@ public class BooksResource {
     @POST
     @Path( "/page/{page}/{perPage}" )
     public Response page( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
-        return Response.ok().entity( bookService.getPaginated( page, perPage, filters ) ).build();
+        return Response.ok().entity( bookService.getPaginated( page, perPage, filters, false ) ).build();
     }
 
     @GET
@@ -52,9 +50,34 @@ public class BooksResource {
     }
 
     @POST
+    @Path( "/deleted/page/{page}/{perPage}" )
+    @RolesAllowed( Roles.ADMIN )
+    public Response pageDeleted( @PathParam( "page" ) int page, @PathParam( "perPage" ) int perPage, BookFilterDto filters ) {
+        return Response.ok().entity( bookService.getPaginated( page, perPage, filters, true ) ).build();
+    }
+
+    @POST
+    @Path( "/restore/{id}" )
+    @RolesAllowed( Roles.ADMIN )
+    public Response restore( @PathParam( "id" ) long id ) {
+        if ( bookService.restore( id ) ) {
+            return Response.ok().entity( new GenericResponseDto( "True" ) ).build();
+        } else {
+            return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "False" ) ).build();
+        }
+    }
+
+    @POST
+    @Path( "/deleted/count" )
+    @RolesAllowed( Roles.ADMIN )
+    public Response countDeleted( BookFilterDto filters ) {
+        return Response.ok().entity( bookService.getCount( filters, true ) ).build();
+    }
+
+    @POST
     @Path( "/count" )
     public Response count( BookFilterDto filters ) {
-        return Response.ok().entity( bookService.getCount( filters ) ).build();
+        return Response.ok().entity( bookService.getCount( filters, false ) ).build();
     }
 
     @GET
@@ -72,8 +95,8 @@ public class BooksResource {
     public Response save( BookDto book ) {
         try {
             return Response.ok().entity( bookService.save( book ) ).build();
-        } catch ( ConstraintViolationException ex ) {
-            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getConstraintViolations().stream().map( ConstraintViolation::getMessage ).collect( Collectors.toList() ) ).build();
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getViolations() ).build();
         }
     }
 
