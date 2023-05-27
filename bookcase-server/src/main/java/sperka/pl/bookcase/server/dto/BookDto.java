@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sperka.pl.bookcase.server.validators.annotations.BookSignatureNotExists;
 
 import javax.validation.constraints.NotBlank;
 import java.time.Instant;
@@ -12,16 +13,17 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@BookSignatureNotExists( message = "books.error.signature-exists" )
 public class BookDto {
     private Long localId;
     private Long remoteId;
-    @NotBlank(message = "books.error.author-may-not-be-blank")
+    @NotBlank( message = "books.error.author-may-not-be-blank" )
     private String author;
-    @NotBlank(message = "books.error.title-may-not-be-blank")
+    @NotBlank( message = "books.error.title-may-not-be-blank" )
     private String title;
-    @NotBlank(message = "books.error.release-may-not-be-blank")
+    @NotBlank( message = "books.error.release-may-not-be-blank" )
     private String released;
-    @NotBlank(message = "books.error.signature-may-not-be-blank")
+    @NotBlank( message = "books.error.signature-may-not-be-blank" )
     private String signature;
     private Instant createDate;
     private Instant modifyDate;

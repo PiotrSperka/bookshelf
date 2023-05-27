@@ -71,5 +71,6 @@
   "books.error.author-may-not-be-blank": "Author must not be blank",
   "books.error.title-may-not-be-blank": "Title must not be blank",
   "books.error.release-may-not-be-blank": "Release must not be blank",
-  "books.error.signature-may-not-be-blank": "Signature must not be blank"
+  "books.error.signature-may-not-be-blank": "Signature must not be blank",
+  "books.error.signature-exists": "Signature already exists"
 }

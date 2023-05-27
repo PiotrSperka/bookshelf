@@ -71,5 +71,6 @@
   "books.error.author-may-not-be-blank": "Autor nie może być pusty",
   "books.error.title-may-not-be-blank": "Tytuł nie może być pusty",
   "books.error.release-may-not-be-blank": "Wydanie nie może być puste",
-  "books.error.signature-may-not-be-blank": "Sygnatura nie może być pusta"
+  "books.error.signature-may-not-be-blank": "Sygnatura nie może być pusta",
+  "books.error.signature-exists": "Sygnatura już istnieje"
 }

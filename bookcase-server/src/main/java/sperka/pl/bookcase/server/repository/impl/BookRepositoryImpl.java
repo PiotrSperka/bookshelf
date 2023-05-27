@@ -45,6 +45,15 @@ public class BookRepositoryImpl extends BasicRepositoryImpl< Book > implements B
     }
 
     @Override
+    public Book getBySignature( String signature ) {
+        TypedQuery< Book > query = entityManager
+                .createQuery( "select b from Book b where b.signature = :signature and b.deleted = false", Book.class )
+                .setParameter( "signature", signature );
+        query.setMaxResults( 1 );
+        return query.getResultStream().findAny().orElse( null );
+    }
+
+    @Override
     public List< Book > getPaginated( int page, int perPage, BookFilterDto filters, boolean deleted ) {
         var criteriaBuilder = entityManager.getCriteriaBuilder();
         var criteriaQuery = criteriaBuilder.createQuery( Book.class );

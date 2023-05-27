@@ -59,7 +59,11 @@ public class BookServiceImpl implements BookService {
         var validationException = new ValidationException();
 
         for ( var violation : validator.validate( dto ) ) {
-            validationException.addViolation( violation.getPropertyPath().toString(), violation.getMessage() );
+            if ( violation.getMessage().equals( "books.error.signature-exists" ) ) {
+                validationException.addViolation( "signature", violation.getMessage() );
+            } else {
+                validationException.addViolation( violation.getPropertyPath().toString(), violation.getMessage() );
+            }
         }
 
         if ( !validationException.isEmpty() ) {

@@ -16,6 +16,8 @@ public interface BookRepository extends BasicRepository< Book > {
 
     Book getLastModified();
 
+    Book getBySignature( String signature );
+
     List< Book > getPaginated( int page, int perPage, BookFilterDto filters, boolean deleted );
 
     Long getCountFiltered( BookFilterDto filters, boolean deleted );

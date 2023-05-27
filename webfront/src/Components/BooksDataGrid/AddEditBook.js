@@ -19,11 +19,13 @@ const AddEditBook = props => {
     const [ validationErrors, setValidationErrors ] = useState( {} );
 
     const resetForm = () => {
+        setValidationErrors( {} );
         setFormData( { remoteId: null, author: "", title: "", released: "", signature: "" } );
     }
 
     useEffect( () => {
         if ( props.bookId === parseInt( props.bookId, 10 ) ) {
+            setValidationErrors( {} );
             getBookApi.request( getGetSingleBookParams( props.bookId ) );
         } else {
             resetForm();
