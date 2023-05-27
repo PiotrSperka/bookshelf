@@ -18,7 +18,7 @@ import java.util.List;
 @Consumes( MediaType.APPLICATION_JSON )
 @RolesAllowed( { Roles.ADMIN, Roles.USER } )
 public class SynchronizationResource {
-    BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
+    private final BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
 
     @Inject
     public SynchronizationResource( BookDatabaseSynchronizationService bookDatabaseSynchronizationService ) {

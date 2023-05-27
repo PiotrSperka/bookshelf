@@ -1,16 +1,14 @@
 package sperka.pl.bookcase.server.auth;
 
 import io.jsonwebtoken.Jwts;
-import lombok.extern.slf4j.Slf4j;
-import sperka.pl.bookcase.server.service.AuthService;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import sperka.pl.bookcase.server.service.AuthService;
 
 @Slf4j
 @Provider
@@ -24,7 +22,7 @@ public class SecurityOverrideFilter implements ContainerRequestFilter {
     }
 
     @Override
-    public void filter( ContainerRequestContext containerRequestContext ) throws IOException {
+    public void filter( ContainerRequestContext containerRequestContext ) {
 
         String authorization = containerRequestContext.getHeaders().getFirst( "Authorization" );
         if ( authorization != null && authorization.startsWith( "Bearer " ) ) {

@@ -1,5 +1,6 @@
 package sperka.pl.bookcase.server.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.logging.Logger;
 import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.entity.Book;
@@ -15,10 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
+@Slf4j
 public class BookDatabaseSynchronizationServiceImpl implements BookDatabaseSynchronizationService {
-    private static final Logger LOG = Logger.getLogger( BookDatabaseSynchronizationServiceImpl.class );
-
-    BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
     @Inject
     public BookDatabaseSynchronizationServiceImpl( BookRepository bookRepository ) {
@@ -73,7 +73,7 @@ public class BookDatabaseSynchronizationServiceImpl implements BookDatabaseSynch
                     modifiedBooks.add( dto );
                 }
             } else {
-                LOG.warn( "Found more than one similar book: " + similarBooks );
+                log.warn( "Found more than one similar book: " + similarBooks );
                 // TODO:
             }
         } );

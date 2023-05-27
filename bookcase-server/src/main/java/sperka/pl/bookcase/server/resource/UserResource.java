@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.SecurityContext;
 @Produces( MediaType.APPLICATION_JSON )
 @Consumes( MediaType.APPLICATION_JSON )
 public class UserResource {
-    UserService userService;
+    private final UserService userService;
 
     @Inject
     public UserResource( UserService userService ) {

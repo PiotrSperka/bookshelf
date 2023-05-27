@@ -23,8 +23,8 @@ import jakarta.ws.rs.core.SecurityContext;
 @Consumes( MediaType.APPLICATION_JSON )
 @Slf4j
 public class AuthResource {
-    UserService userService;
-    AuthService authService;
+    private final UserService userService;
+    private final AuthService authService;
 
     @Inject
     public AuthResource( UserService userService, AuthService authService ) {

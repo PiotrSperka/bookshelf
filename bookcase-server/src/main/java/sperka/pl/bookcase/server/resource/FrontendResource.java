@@ -6,6 +6,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.CacheControl;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -26,7 +28,7 @@ public class FrontendResource {
         if ( inputStream != null ) {
             return Response
                     .ok( inputStream )
-                    .cacheControl( CacheControl.valueOf( "max-age=900" ) )
+                    .cacheControl( RuntimeDelegate.getInstance().createHeaderDelegate( CacheControl.class ).fromString( "max-age=900" ) )
                     .type( URLConnection.guessContentTypeFromStream( inputStream ) )
                     .build();
         }
