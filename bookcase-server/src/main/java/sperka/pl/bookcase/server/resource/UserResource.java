@@ -1,17 +1,17 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import sperka.pl.bookcase.server.auth.Roles;
 import sperka.pl.bookcase.server.dto.*;
 import sperka.pl.bookcase.server.service.UserService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 @ApplicationScoped
 @Path( "/api/user" )

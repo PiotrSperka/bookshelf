@@ -4,9 +4,9 @@ import sperka.pl.bookcase.server.dto.LogFilterDto;
 import sperka.pl.bookcase.server.entity.Log;
 import sperka.pl.bookcase.server.repository.LogRepository;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 
 @ApplicationScoped

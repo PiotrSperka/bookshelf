@@ -3,12 +3,12 @@ package sperka.pl.bookcase.server.repository.impl;
 import sperka.pl.bookcase.server.entity.IdProvider;
 import sperka.pl.bookcase.server.repository.BasicRepository;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 
 public class BasicRepositoryImpl<T extends IdProvider > implements BasicRepository<T> {

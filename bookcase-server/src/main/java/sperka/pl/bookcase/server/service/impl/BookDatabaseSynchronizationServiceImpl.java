@@ -6,9 +6,9 @@ import sperka.pl.bookcase.server.entity.Book;
 import sperka.pl.bookcase.server.repository.BookRepository;
 import sperka.pl.bookcase.server.service.BookDatabaseSynchronizationService;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

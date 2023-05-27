@@ -3,7 +3,7 @@ package sperka.pl.bookcase.server.repository.impl;
 import sperka.pl.bookcase.server.entity.User;
 import sperka.pl.bookcase.server.repository.UserRepository;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserRepositoryImpl extends BasicRepositoryImpl< User > implements UserRepository {

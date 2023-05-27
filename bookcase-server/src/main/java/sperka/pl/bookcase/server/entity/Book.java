@@ -8,9 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.*;
 import sperka.pl.bookcase.server.dto.BookDto;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity

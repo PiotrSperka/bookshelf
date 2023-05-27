@@ -1,14 +1,13 @@
 package sperka.pl.bookcase.server.auth;
 
-import io.quarkus.arc.Priority;
 import io.quarkus.security.UnauthorizedException;
-
-import javax.ws.rs.Priorities;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 @Priority( Priorities.AUTHORIZATION )

@@ -10,7 +10,7 @@ import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.entity.Book;
 import sperka.pl.bookcase.server.repository.BookRepository;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import java.time.Instant;
 import java.util.ArrayList;

@@ -6,8 +6,8 @@ import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.LogService;
 import sperka.pl.bookcase.server.service.UserService;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

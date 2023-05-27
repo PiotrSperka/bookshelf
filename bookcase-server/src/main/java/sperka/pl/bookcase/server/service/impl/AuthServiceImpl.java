@@ -12,8 +12,8 @@ import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.AuthService;
 import sperka.pl.bookcase.server.service.LogService;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

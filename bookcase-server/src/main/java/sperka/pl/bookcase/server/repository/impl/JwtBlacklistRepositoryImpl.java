@@ -3,7 +3,7 @@ package sperka.pl.bookcase.server.repository.impl;
 import sperka.pl.bookcase.server.entity.JwtBlacklist;
 import sperka.pl.bookcase.server.repository.JwtBlacklistRepository;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 @ApplicationScoped
