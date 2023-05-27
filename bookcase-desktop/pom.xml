@@ -8,7 +8,7 @@
         <version>2.7.10</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>sperka.online</groupId>
+    <groupId>sperka.pl</groupId>
     <artifactId>bookcase-desktop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>bookcase-desktop</name>
@@ -57,7 +57,7 @@
         </dependency>
 
         <dependency>
-            <groupId>sperka.online</groupId>
+            <groupId>sperka.pl</groupId>
             <artifactId>bookcase-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

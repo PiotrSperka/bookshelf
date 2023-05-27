@@ -1,0 +1,10 @@
+.main {
+    margin: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.dataGrid {
+    margin-top: 20px;
+}

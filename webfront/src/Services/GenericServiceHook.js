@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUserContext } from "../UserContextProvider";
 
 const getHeaders = ( userContext, explicitToken ) => {
-    const token = ( explicitToken != null ) ? explicitToken : (userContext != null) ? userContext.token : null;
+    const token = ( explicitToken != null ) ? explicitToken : ( userContext != null ) ? userContext.token : null;
     if ( token ) {
         return { "Content-Type": "application/json", "Authorization": "Bearer " + token };
     } else {
@@ -34,6 +34,7 @@ const useApi = () => {
                     setData( result );
                     resolve( result );
                 } else {
+                    setData( result );
                     setError( result.statusText || "Unexpected Error!" );
                     reject( result.statusText || "Unexpected Error!" );
                 }
