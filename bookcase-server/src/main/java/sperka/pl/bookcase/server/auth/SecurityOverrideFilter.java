@@ -15,15 +15,16 @@ import sperka.pl.bookcase.server.service.AuthService;
 @PreMatching
 public class SecurityOverrideFilter implements ContainerRequestFilter {
     private final AuthService authService;
+    private final SigningKey signingKey;
 
     @Inject
-    public SecurityOverrideFilter( AuthService authService ) {
+    public SecurityOverrideFilter( AuthService authService, SigningKey signingKey ) {
         this.authService = authService;
+        this.signingKey = signingKey;
     }
 
     @Override
     public void filter( ContainerRequestContext containerRequestContext ) {
-
         String authorization = containerRequestContext.getHeaders().getFirst( "Authorization" );
         if ( authorization != null && authorization.startsWith( "Bearer " ) ) {
             try {
@@ -33,7 +34,7 @@ public class SecurityOverrideFilter implements ContainerRequestFilter {
                     containerRequestContext.abortWith( Response.status( Response.Status.UNAUTHORIZED ).build() );
                 }
 
-                var jwt = Jwts.parserBuilder().setSigningKey( SigningKey.getKey() ).build().parseClaimsJws( token );
+                var jwt = Jwts.parserBuilder().setSigningKey( signingKey.getKey() ).build().parseClaimsJws( token );
                 containerRequestContext.setSecurityContext( new JwtSecurityContext( jwt, containerRequestContext.getSecurityContext() ) );
             } catch ( Exception exception ) {
                 log.error( authorization );

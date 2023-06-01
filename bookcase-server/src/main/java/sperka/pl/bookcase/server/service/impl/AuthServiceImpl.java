@@ -3,6 +3,8 @@ package sperka.pl.bookcase.server.service.impl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.quarkus.scheduler.Scheduled;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import sperka.pl.bookcase.server.auth.SigningKey;
 import sperka.pl.bookcase.server.entity.JwtBlacklist;
@@ -12,8 +14,6 @@ import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.AuthService;
 import sperka.pl.bookcase.server.service.LogService;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -25,11 +25,13 @@ public class AuthServiceImpl implements AuthService {
     private final JwtBlacklistRepository jwtBlacklistRepository;
     private final UserRepository userRepository;
     private final LogService logService;
+    private final SigningKey signingKey;
 
-    public AuthServiceImpl( JwtBlacklistRepository jwtBlacklistRepository, UserRepository userRepository, LogService logService ) {
+    public AuthServiceImpl( JwtBlacklistRepository jwtBlacklistRepository, UserRepository userRepository, LogService logService, SigningKey signingKey ) {
         this.jwtBlacklistRepository = jwtBlacklistRepository;
         this.userRepository = userRepository;
         this.logService = logService;
+        this.signingKey = signingKey;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String refresh( String token ) {
-        var jwt = Jwts.parserBuilder().setSigningKey( SigningKey.getKey() ).build().parseClaimsJws( token );
+        var jwt = Jwts.parserBuilder().setSigningKey( signingKey.getKey() ).build().parseClaimsJws( token );
         var user = userRepository.getUserByUsername( jwt.getBody().getSubject() );
         if ( user != null && user.getActive() ) {
             if ( jwt.getBody().getExpiration().toInstant().isBefore( Instant.now().plus( 5, ChronoUnit.MINUTES ) ) ) {
@@ -85,14 +87,14 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private static String getJwtToken( User user ) {
+    private String getJwtToken( User user ) {
         return Jwts.builder()
                 .setIssuer( "Bookshelf" )
                 .setSubject( user.getName() )
                 .claim( "roles", user.getRoles() )
                 .setIssuedAt( Date.from( Instant.now() ) )
                 .setExpiration( Date.from( Instant.now().plusMillis( 1000 * 60 * 60 ) ) )
-                .signWith( SigningKey.getKey() )
+                .signWith( signingKey.getKey() )
                 .compact();
     }
 
