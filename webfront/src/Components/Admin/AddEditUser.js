@@ -51,13 +51,13 @@ const AddEditUser = props => {
     }, [ getUserApi.data ] )
 
     useEffect( () => {
-        if ( saveApi.error === "" && saveApi.loading === false && props.onClose ) {
+        if ( saveApi.data !== null && saveApi.error === "" && saveApi.loading === false && props.onClose ) {
             props.onClose( true );
         }
     }, [ saveApi.error, saveApi.loading ] )
 
     const resetForm = () => {
-        setFormData( { id: null, name: "", roles: "", password: "", active: true } );
+        setFormData( { id: null, name: "", email: "", locale: "", roles: "", password: "", active: true } );
     }
 
     const submitUser = event => {
@@ -83,6 +83,14 @@ const AddEditUser = props => {
         setFormData( prevState => ( { ...prevState, name: event.target.value } ) );
     }
 
+    const onEmailChange = event => {
+        setFormData( prevState => ( { ...prevState, email: event.target.value } ) );
+    }
+
+    const onLocaleChange = event => {
+        setFormData( prevState => ( { ...prevState, locale: event.target.value } ) );
+    }
+
     const onPasswordChange = event => {
         setFormData( prevState => ( { ...prevState, password: event.target.value } ) );
     }
@@ -103,10 +111,19 @@ const AddEditUser = props => {
                 <TextField name={ "name" } value={ formData.name } label={ <FormattedMessage id="user-dialog.name"/> }
                            variant={ "standard" }
                            onChange={ onNameChange }/>
-                <TextField name={ "password" } value={ formData.password }
-                           label={ <FormattedMessage id="user-dialog.password"/> } variant={ "standard" }
-                           type={ "password" }
-                           onChange={ onPasswordChange }/>
+                <TextField name={ "email" } value={ formData.email }
+                           label={ <FormattedMessage id="user-dialog.email"/> }
+                           variant={ "standard" }
+                           onChange={ onEmailChange }/>
+                <TextField name={ "locale" } value={ formData.locale }
+                           label={ <FormattedMessage id="user-dialog.locale"/> }
+                           variant={ "standard" }
+                           onChange={ onLocaleChange }/>
+                { props.userId !== null && <TextField name={ "password" } value={ formData.password }
+                                                      label={ <FormattedMessage id="user-dialog.password"/> }
+                                                      variant={ "standard" }
+                                                      type={ "password" }
+                                                      onChange={ onPasswordChange }/> }
                 <TextField name={ "roles" } value={ formData.roles }
                            label={ <FormattedMessage id="user-dialog.roles"/> } variant={ "standard" }
                            onChange={ onRolesChange }/>

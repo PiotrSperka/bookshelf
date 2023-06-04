@@ -15,11 +15,13 @@ public interface UserService {
 
     long countUsers();
 
-    boolean createUser( String username, String password, List< String > roles );
+    boolean createUser( String username, List< String > roles, String email, String locale );
 
     boolean modifyPassword( String username, String oldPassword, String newPassword );
 
-    boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active );
+    boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active, String email, String locale );
 
     boolean deleteUser( Long id, String currentUsername );
+
+    boolean resetPassword( String token, String password, String passwordRepeat );
 }

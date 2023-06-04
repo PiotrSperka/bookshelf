@@ -14,6 +14,8 @@
   "add-book-dialog.cancel": "Cancel",
   "user-dialog.dialog-title": "User configuration",
   "user-dialog.name": "Name",
+  "user-dialog.email": "E-mail",
+  "user-dialog.locale": "Locale",
   "user-dialog.password": "Password",
   "user-dialog.roles": "Roles",
   "user-dialog.active": "Active",
@@ -39,6 +41,8 @@
   "admin.users-management.add-user": "Add user",
   "admin.users-management.name": "Name",
   "admin.users-management.roles": "Roles",
+  "admin.users-management.email": "E-mail",
+  "admin.users-management.locale": "Locale",
   "admin.users-management.active": "Active",
   "admin.users-management.settings": "Settings",
   "admin.users-management.delete": "Delete",
@@ -72,5 +76,12 @@
   "books.error.title-may-not-be-blank": "Title must not be blank",
   "books.error.release-may-not-be-blank": "Release must not be blank",
   "books.error.signature-may-not-be-blank": "Signature must not be blank",
-  "books.error.signature-exists": "Signature already exists"
+  "books.error.signature-exists": "Signature already exists",
+  "reset-password.dialog-title": "Set new password",
+  "reset-password.password": "Password",
+  "reset-password.password-repeat": "Repeat password",
+  "reset-password.save-button": "Set new password",
+  "reset-password.error.password-repeat-does-not-match": "Passwords don't match",
+  "reset-password.error.password-cannot-be-blank": "Password cannot be blank",
+  "reset-password.error.token-error": "Token is wrong or expired"
 }

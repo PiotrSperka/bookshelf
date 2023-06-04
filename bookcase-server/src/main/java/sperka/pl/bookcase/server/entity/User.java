@@ -5,13 +5,12 @@ import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table( name = "users" )
@@ -36,13 +35,23 @@ public class User implements IdProvider {
     private String password;
 
     @Roles
-    public String roles;
+    private String roles;
 
     @ColumnDefault( "true" )
-    public Boolean active;
+    private Boolean active;
+
+    private String email;
+
+    private String locale;
+
+    private String resetPasswordToken;
 
     public void setPassword( String password ) {
         this.password = BcryptUtil.bcryptHash( password );
+    }
+
+    public void emptyPassword() {
+        this.password = "";
     }
 
     @Override
@@ -52,15 +61,18 @@ public class User implements IdProvider {
                 ", name='" + name + '\'' +
                 ", roles='" + roles + '\'' +
                 ", active='" + active + '\'' +
+                ", email='" + email + '\'' +
+                ", locale='" + locale + '\'' +
                 '}';
     }
 
-    public static User create( String username, String password, String roles ) {
+    public static User create( String username, String roles, String email, String locale ) {
         User user = new User();
         user.setName( username );
-        user.setPassword( password );
         user.setRoles( roles );
         user.setActive( true );
+        user.setEmail( email );
+        user.setLocale( locale );
         return user;
     }
 

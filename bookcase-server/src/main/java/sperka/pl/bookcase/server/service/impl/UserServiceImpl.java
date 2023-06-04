@@ -1,25 +1,30 @@
 package sperka.pl.bookcase.server.service.impl;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import sperka.pl.bookcase.server.dto.UserInfoDto;
 import sperka.pl.bookcase.server.entity.User;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
+import sperka.pl.bookcase.server.mailer.MailerFacade;
 import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.LogService;
 import sperka.pl.bookcase.server.service.UserService;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LogService logService;
+    private final MailerFacade mailer;
 
-    public UserServiceImpl( UserRepository userRepository, LogService logService ) {
+    public UserServiceImpl( UserRepository userRepository, LogService logService, MailerFacade mailerFacade ) {
         this.userRepository = userRepository;
         this.logService = logService;
+        this.mailer = mailerFacade;
     }
 
     @Override
@@ -28,11 +33,17 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
-        createUser( "admin", "ChangeMe!", Collections.singletonList( "admin" ) );
+        if ( createUser( "admin", Collections.singletonList( "admin" ), "change@me", "" ) ) {
+            var user = userRepository.getUserByUsername( "admin" );
+            user.setPassword( "ChangeMe!" );
+            user.setResetPasswordToken( null );
+            userRepository.save( user );
 
-        logService.add( "Initialized users table", "system" );
+            logService.add( "Initialized users table", "system" );
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -59,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean createUser( String username, String password, List< String > roles ) {
+    public boolean createUser( String username, List< String > roles, String email, String locale ) {
         User user = null;
         try {
             user = userRepository.getUserByUsername( username );
@@ -67,9 +78,13 @@ public class UserServiceImpl implements UserService {
         }
 
         if ( user == null ) {
-            user = User.create( username, password, String.join( ",", roles ) );
+            user = User.create( username, String.join( ",", roles ), email, locale );
+            user.emptyPassword();
+            user.setResetPasswordToken( getRandomString( 64 ) );
+
             userRepository.save( user );
             logService.add( "Created new user " + user, "system" );
+            mailer.sendWelcomeMail( user );
             return true;
         }
 
@@ -102,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active ) {
+    public boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active, String email, String locale ) {
         if ( id == null ) {
             return false;
         }
@@ -120,6 +135,12 @@ public class UserServiceImpl implements UserService {
             }
             if ( active != null ) {
                 user.setActive( active );
+            }
+            if ( email != null ) {
+                user.setEmail( email );
+            }
+            if ( locale != null ) {
+                user.setLocale( locale );
             }
 
             userRepository.save( user );
@@ -150,5 +171,47 @@ public class UserServiceImpl implements UserService {
         }
 
         return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean resetPassword( String token, String password, String passwordRepeat ) {
+        var validationException = new ValidationException();
+        User user = userRepository.getUserByResetPasswordToken( token );
+
+        if ( user == null ) {
+            validationException.addViolation( "generic", "reset-password.error.token-error" );
+        }
+
+        if ( password.isBlank() ) {
+            validationException.addViolation( "password", "reset-password.error.password-cannot-be-blank" );
+        }
+
+        if ( !password.equals( passwordRepeat ) ) {
+            validationException.addViolation( "password", "reset-password.error.password-repeat-does-not-match" );
+        }
+
+        if ( !validationException.isEmpty() ) {
+            throw validationException;
+        }
+
+        if ( user != null ) {
+            user.setResetPasswordToken( null );
+            user.setPassword( password );
+            userRepository.save( user );
+            return true;
+        }
+
+        return false;
+    }
+
+    private String getRandomString( int length ) {
+        final int leftLimit = 48; // numeral '0'
+        final int rightLimit = 122; // letter 'z'
+        return new Random().ints( leftLimit, rightLimit + 1 )
+                .filter( i -> ( i <= 57 || i >= 65 ) && ( i <= 90 || i >= 97 ) )
+                .limit( length )
+                .collect( StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append )
+                .toString();
     }
 }

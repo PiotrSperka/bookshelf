@@ -15,4 +15,6 @@ public class CreateUserRequestDto {
     private String name;
     private String password;
     private List< String > roles;
+    private String email;
+    private String locale;
 }

@@ -1,10 +1,7 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
-import sperka.pl.bookcase.server.auth.Roles;
-import sperka.pl.bookcase.server.dto.*;
-import sperka.pl.bookcase.server.service.UserService;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -12,6 +9,10 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import sperka.pl.bookcase.server.auth.Roles;
+import sperka.pl.bookcase.server.dto.*;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
+import sperka.pl.bookcase.server.service.UserService;
 
 @ApplicationScoped
 @Path( "/api/user" )
@@ -48,7 +49,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response addUser( CreateUserRequestDto request ) {
-        var result = userService.createUser( request.getName(), request.getPassword(), request.getRoles() );
+        var result = userService.createUser( request.getName(), request.getRoles(), request.getEmail(), request.getLocale() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }
@@ -60,7 +61,7 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response editUser( ModifyUserRequestDto request ) {
-        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles(), request.getActive() );
+        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles(), request.getActive(), request.getEmail(), request.getLocale() );
         if ( result ) {
             return Response.ok( new GenericResponseDto( "OK" ) ).build();
         }
@@ -93,6 +94,21 @@ public class UserResource {
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).build();
+    }
+
+    @POST
+    @PermitAll
+    @Path( "/reset-password/{token}" )
+    public Response resetPassword( @PathParam( "token" ) String token, ResetPasswordDto dto ) {
+        try {
+            if ( userService.resetPassword( token, dto.getPassword(), dto.getPasswordRepeat() ) ) {
+                return Response.status( Response.Status.OK ).entity( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.BAD_REQUEST ).entity( ex.getViolations() ).build();
+        }
+
+        return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
     }
 
     @GET

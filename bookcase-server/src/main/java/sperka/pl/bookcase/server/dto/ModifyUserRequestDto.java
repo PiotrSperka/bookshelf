@@ -17,4 +17,6 @@ public class ModifyUserRequestDto {
     private List< String > roles;
     private String password;
     private Boolean active;
+    private String email;
+    private String locale;
 }

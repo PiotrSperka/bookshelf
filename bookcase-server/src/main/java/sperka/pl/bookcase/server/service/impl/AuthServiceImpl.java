@@ -35,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public String loginUser( String username, String password ) {
         if ( username == null || password == null ) {
             return null;
@@ -42,6 +43,11 @@ public class AuthServiceImpl implements AuthService {
 
         var user = userRepository.getUserByUsername( username );
         if ( user != null && user.isPasswordMatching( password ) ) {
+            if ( user.getResetPasswordToken() != null ) {
+                // If someone logged in successfully, revoke password change token == they know password
+                revokeResetPasswordToken( user );
+            }
+
             if ( user.getActive() ) {
                 logService.add( "User '" + username + "' authenticated successfully", "system" );
                 return getJwtToken( user );
@@ -96,6 +102,11 @@ public class AuthServiceImpl implements AuthService {
                 .setExpiration( Date.from( Instant.now().plusMillis( 1000 * 60 * 60 ) ) )
                 .signWith( signingKey.getKey() )
                 .compact();
+    }
+
+    private void revokeResetPasswordToken( User user ) {
+        user.setResetPasswordToken( null );
+        userRepository.save( user );
     }
 
     @Scheduled( every = "10m" )

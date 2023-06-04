@@ -1,14 +1,6 @@
 package sperka.pl.bookcase.server.resource;
 
 import jakarta.annotation.security.PermitAll;
-import lombok.extern.slf4j.Slf4j;
-import sperka.pl.bookcase.server.auth.JwtUserPrincipal;
-import sperka.pl.bookcase.server.dto.GenericResponseDto;
-import sperka.pl.bookcase.server.dto.LoginRequestDto;
-import sperka.pl.bookcase.server.dto.LoginResponseDto;
-import sperka.pl.bookcase.server.service.AuthService;
-import sperka.pl.bookcase.server.service.UserService;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -16,6 +8,13 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import lombok.extern.slf4j.Slf4j;
+import sperka.pl.bookcase.server.auth.JwtUserPrincipal;
+import sperka.pl.bookcase.server.dto.GenericResponseDto;
+import sperka.pl.bookcase.server.dto.LoginRequestDto;
+import sperka.pl.bookcase.server.dto.LoginResponseDto;
+import sperka.pl.bookcase.server.service.AuthService;
+import sperka.pl.bookcase.server.service.UserService;
 
 @ApplicationScoped
 @Path( "/api/auth" )

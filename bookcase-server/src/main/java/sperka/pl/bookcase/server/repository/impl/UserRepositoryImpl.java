@@ -1,9 +1,8 @@
 package sperka.pl.bookcase.server.repository.impl;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import sperka.pl.bookcase.server.entity.User;
 import sperka.pl.bookcase.server.repository.UserRepository;
-
-import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UserRepositoryImpl extends BasicRepositoryImpl< User > implements UserRepository {
@@ -15,6 +14,12 @@ public class UserRepositoryImpl extends BasicRepositoryImpl< User > implements U
     public User getUserByUsername( String username ) {
         return entityManager.createQuery( "select u from User u where u.name like :name", User.class )
                 .setParameter( "name", username ).getSingleResult();
+    }
+
+    @Override
+    public User getUserByResetPasswordToken( String resetToken ) {
+        return entityManager.createQuery( "select u from User u where u.resetPasswordToken = :token", User.class )
+                .setParameter( "token", resetToken ).getResultStream().findFirst().orElse( null );
     }
 
     @Override

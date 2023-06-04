@@ -9,6 +9,7 @@ import { useIntl } from "react-intl";
 import React, { useEffect } from "react";
 import { useUserContext } from "./UserContextProvider";
 import BooksDatabaseViewer from "./Components/BooksDataGrid/BooksDatabaseViewer";
+import ResetPassword from "./Components/ResetPassword";
 
 
 const App = () => {
@@ -22,17 +23,17 @@ const App = () => {
     return (
         <div className={ styles.appMainDiv }>
             <BrowserRouter>
-                <Login/>
+                { ( window.location.pathname.startsWith( "/set-password/" ) === false ) && <Login/> }
                 { isLoggedIn() && <TopBar/> }
-                { isLoggedIn() &&
-                    <Routes>
-                        <Route path="/">
-                            <Route index={ true } element={ <BooksDatabaseViewer/> }/>
-                            <Route path="user" element={ <UserAdmin/> }/>
-                            <Route path="admin" element={ <SystemAdmin/> }/>
-                        </Route>
-                        <Route path="*" element={ <h2>404 :(</h2> }/>
-                    </Routes> }
+                <Routes>
+                    <Route path="/set-password/*" element={ <ResetPassword/> }/>
+                    { isLoggedIn() && <Route path="/">
+                        <Route index={ true } element={ <BooksDatabaseViewer/> }/>
+                        <Route path="user" element={ <UserAdmin/> }/>
+                        <Route path="admin" element={ <SystemAdmin/> }/>
+                    </Route> }
+                    <Route path="*" element={ <h2>404 :(</h2> }/>
+                </Routes>
                 <div className={ styles.appMainSpacer }></div>
                 <BottomBar/>
             </BrowserRouter>

@@ -18,7 +18,7 @@ const DeleteUser = props => {
     }
 
     useEffect( () => {
-        if ( deleteApi.error === "" && deleteApi.loading === false && props.onClose ) {
+        if ( deleteApi.data !== null && deleteApi.error === "" && deleteApi.loading === false && props.onClose ) {
             props.onClose( true );
         }
     }, [ deleteApi.error, deleteApi.loading ] )
