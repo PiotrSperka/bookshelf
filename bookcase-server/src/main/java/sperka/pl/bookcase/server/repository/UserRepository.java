@@ -7,5 +7,7 @@ public interface UserRepository extends BasicRepository< User > {
 
     User getUserByResetPasswordToken( String resetToken );
 
+    User getUserByEmail( String email );
+
     long countAll();
 }

@@ -1,22 +1,21 @@
 import styles from "./ResetPassword.module.css"
 import { Alert, Backdrop, Button, CircularProgress, Dialog, DialogTitle, TextField } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import LoginIcon from "@mui/icons-material/Login";
-import { useApi } from "../Services/GenericServiceHook";
+import { useApi } from "../../Services/GenericServiceHook";
 import { useEffect, useState } from "react";
-import { getResetPasswordParams } from "../Services/UserApi";
+import { getResetPasswordParams } from "../../Services/UserApi";
 
 const ResetPassword = () => {
+    const navigate = useNavigate();
     const intl = useIntl();
     const params = useParams();
     const resetApi = useApi();
-    const [ processing, setProcessing ] = useState( false );
     const [ validationErrors, setValidationErrors ] = useState( {} );
 
     useEffect( () => {
         if ( resetApi.data !== null ) {
-            setProcessing( false );
             if ( resetApi.data.status !== 200 ) {
                 resetApi.data.clone().json().then( json => {
                     setValidationErrors( json );
@@ -25,7 +24,7 @@ const ResetPassword = () => {
                 } );
             } else {
                 setValidationErrors( {} );
-                window.location.href = '/';
+                navigate( '/' );
             }
         }
     }, [ resetApi.data ] )
@@ -33,12 +32,9 @@ const ResetPassword = () => {
     const formSubmitted = ( event ) => {
         event.preventDefault();
 
-        setProcessing( true );
         const formData = new FormData( event.target );
         resetApi.request( getResetPasswordParams( params[ '*' ], Object.fromEntries( formData.entries() ) ) )
     }
-
-    console.log( params );
 
     return (
         <Dialog className={ styles.dialog } open={ true }>
@@ -56,7 +52,7 @@ const ResetPassword = () => {
                 <Button className={ styles.submitButton } variant={ "contained" } type={ "submit" }
                         startIcon={ <LoginIcon/> }><FormattedMessage id="reset-password.save-button"/></Button>
             </form>
-            <Backdrop open={ processing }>
+            <Backdrop open={ resetApi.loading }>
                 <CircularProgress/>
             </Backdrop>
         </Dialog>

@@ -13,13 +13,19 @@ public class UserRepositoryImpl extends BasicRepositoryImpl< User > implements U
     @Override
     public User getUserByUsername( String username ) {
         return entityManager.createQuery( "select u from User u where u.name like :name", User.class )
-                .setParameter( "name", username ).getSingleResult();
+                .setParameter( "name", username ).getResultStream().findFirst().orElse( null );
     }
 
     @Override
     public User getUserByResetPasswordToken( String resetToken ) {
         return entityManager.createQuery( "select u from User u where u.resetPasswordToken = :token", User.class )
                 .setParameter( "token", resetToken ).getResultStream().findFirst().orElse( null );
+    }
+
+    @Override
+    public User getUserByEmail( String email ) {
+        return entityManager.createQuery( "select u from User u where u.email = :email", User.class )
+                .setParameter( "email", email ).getResultStream().findFirst().orElse( null );
     }
 
     @Override

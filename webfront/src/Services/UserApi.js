@@ -30,8 +30,12 @@ const logoutParams = () => {
     return { url: "/api/auth/logout", method: "GET", data: null };
 }
 
-const getResetPasswordParams = (token, data) => {
+const getResetPasswordParams = ( token, data ) => {
     return { url: "/api/user/reset-password/" + token, method: "POST", data: data };
+}
+
+const getRequestResetPasswordParams = ( data ) => {
+    return { url: "/api/user/request-reset-password", method: "POST", data: data };
 }
 
 export {
@@ -43,6 +47,7 @@ export {
     addUserParams,
     deleteUserParams,
     logoutParams,
-    getResetPasswordParams
+    getResetPasswordParams,
+    getRequestResetPasswordParams
 };
 

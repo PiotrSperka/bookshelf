@@ -111,6 +111,14 @@ public class UserResource {
         return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
     }
 
+    @POST
+    @PermitAll
+    @Path( "/request-reset-password" )
+    public Response requestResetPassword( RequestResetPasswordDto dto ) {
+        userService.sendResetPasswordToken( dto.getEmail() );
+        return Response.status( Response.Status.OK ).entity( new GenericResponseDto( "OK" ) ).build();
+    }
+
     @GET
     @RolesAllowed( { Roles.ADMIN, Roles.USER } )
     @Path( "/info" )

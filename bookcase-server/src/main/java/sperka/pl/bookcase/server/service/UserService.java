@@ -24,4 +24,6 @@ public interface UserService {
     boolean deleteUser( Long id, String currentUsername );
 
     boolean resetPassword( String token, String password, String passwordRepeat );
+
+    boolean sendResetPasswordToken( String email );
 }

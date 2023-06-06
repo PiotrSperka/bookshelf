@@ -37,6 +37,8 @@
   "login.login": "Login",
   "login.login-button": "Zaloguj się",
   "login.password": "Hasło",
+  "login.reset-password": "Zresetuj hasło",
+  "login.wrong-login-or-password": "Błędny login lub hasło",
   "admin.users-management": "Zarządzanie użytkownikami",
   "admin.users-management.add-user": "Nowy użytkownik",
   "admin.users-management.name": "Nazwa",
@@ -83,5 +85,10 @@
   "reset-password.save-button": "Ustaw nowe hasło",
   "reset-password.error.password-repeat-does-not-match": "Hasła nie pasują do siebie",
   "reset-password.error.password-cannot-be-blank": "Hasło nie może być puste",
-  "reset-password.error.token-error": "Token jest błędny lub wygasł"
+  "reset-password.error.token-error": "Token jest błędny lub wygasł",
+  "request-reset-password.dialog-title": "Zresetuj hasło",
+  "request-reset-password.success": "Jeżeli podany adres e-mail istnieje w systemie, dostaniesz wiadomość z linkiem resetującym hasło.",
+  "request-reset-password.email": "E-mail",
+  "request-reset-password.save-button": "Zresetuj hasło",
+  "request-reset-password.login": "Zaloguj"
 }

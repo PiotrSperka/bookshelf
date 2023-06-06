@@ -205,6 +205,25 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    @Override
+    @Transactional
+    public boolean sendResetPasswordToken( String email ) {
+        if ( email == null || email.isBlank() ) {
+            return false;
+        }
+
+        var user = userRepository.getUserByEmail( email );
+        if ( user != null ) {
+            user.setResetPasswordToken( getRandomString( 64 ) );
+            userRepository.save( user );
+            logService.add( "Requested password reset for " + user, "system" );
+            mailer.sendPasswordResetMail( user );
+            return true;
+        }
+
+        return false;
+    }
+
     private String getRandomString( int length ) {
         final int leftLimit = 48; // numeral '0'
         final int rightLimit = 122; // letter 'z'

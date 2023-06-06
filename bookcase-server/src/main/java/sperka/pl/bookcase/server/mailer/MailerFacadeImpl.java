@@ -68,4 +68,18 @@ public class MailerFacadeImpl implements MailerFacade {
             log.error( e.getMessage(), e );
         }
     }
+
+    @Override
+    public void sendPasswordResetMail( User user ) {
+        try {
+            var data = new HashMap< String, String >();
+            data.put( "name", user.getName() );
+            data.put( "activation_url", applicationUrl + "/set-password/" + user.getResetPasswordToken() );
+            var template = loadHtmlTemplate( user.getLocale(), "reset-password-mail", data );
+            mailer.send( Mail.withText( user.getEmail(),
+                    loadTemplate( user.getLocale(), "reset-password-mail-subject", Collections.emptyMap(), "txt" ), template ) );
+        } catch ( Exception e ) {
+            log.error( e.getMessage(), e );
+        }
+    }
 }

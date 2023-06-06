@@ -37,6 +37,8 @@
   "login.login": "Login",
   "login.login-button": "Login",
   "login.password": "Password",
+  "login.reset-password": "Reset password",
+  "login.wrong-login-or-password": "Wrong login or password",
   "admin.users-management": "Users management",
   "admin.users-management.add-user": "Add user",
   "admin.users-management.name": "Name",
@@ -83,5 +85,10 @@
   "reset-password.save-button": "Set new password",
   "reset-password.error.password-repeat-does-not-match": "Passwords don't match",
   "reset-password.error.password-cannot-be-blank": "Password cannot be blank",
-  "reset-password.error.token-error": "Token is wrong or expired"
+  "reset-password.error.token-error": "Token is wrong or expired",
+  "request-reset-password.dialog-title": "Reset password",
+  "request-reset-password.success": "If provided e-mail exists in the system, you will receive link to reset your password.",
+  "request-reset-password.email": "E-mail",
+  "request-reset-password.save-button": "Reset password",
+  "request-reset-password.login": "Login"
 }
