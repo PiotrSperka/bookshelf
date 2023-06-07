@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final LogService logService;
-
     private final Validator validator;
 
     public BookServiceImpl( BookRepository bookRepository, LogService logService, Validator validator ) {

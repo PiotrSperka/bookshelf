@@ -86,9 +86,17 @@
   "reset-password.error.password-repeat-does-not-match": "Hasła nie pasują do siebie",
   "reset-password.error.password-cannot-be-blank": "Hasło nie może być puste",
   "reset-password.error.token-error": "Token jest błędny lub wygasł",
+  "reset-password.error.password-needs-to-be-6-chars": "Hasło musi mieć przynajmniej 6 znaków",
   "request-reset-password.dialog-title": "Zresetuj hasło",
   "request-reset-password.success": "Jeżeli podany adres e-mail istnieje w systemie, dostaniesz wiadomość z linkiem resetującym hasło.",
   "request-reset-password.email": "E-mail",
   "request-reset-password.save-button": "Zresetuj hasło",
-  "request-reset-password.login": "Zaloguj"
+  "request-reset-password.login": "Zaloguj",
+  "user.error.name-must-not-be-empty": "Nazwa nie może być pusta",
+  "user.error.roles-must-not-be-empty": "Role nie mogą być puste",
+  "user.error.email-must-not-be-empty": "E-mail nie może być pusty",
+  "user.error.name-already-exists": "Nazwa już istnieje",
+  "user.error.email-already-exists": "E-mail już istnieje",
+  "user.error.user-needs-at-least-one-role": "Użytkownik potrzebuje przynajmniej jedną rolę",
+  "user.error.password-needs-to-be-at-least-6-chars": "Hasło musi mieć przynajmniej 6 znaków"
 }

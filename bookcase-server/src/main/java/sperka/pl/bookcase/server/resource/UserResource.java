@@ -49,9 +49,13 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response addUser( CreateUserRequestDto request ) {
-        var result = userService.createUser( request.getName(), request.getRoles(), request.getEmail(), request.getLocale() );
-        if ( result ) {
-            return Response.ok( new GenericResponseDto( "OK" ) ).build();
+        try {
+            var result = userService.createUser( request );
+            if ( result ) {
+                return Response.ok( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getViolations() ).build();
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
@@ -61,9 +65,13 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response editUser( ModifyUserRequestDto request ) {
-        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles(), request.getActive(), request.getEmail(), request.getLocale() );
-        if ( result ) {
-            return Response.ok( new GenericResponseDto( "OK" ) ).build();
+        try {
+            var result = userService.modifyUser( request );
+            if ( result ) {
+                return Response.ok( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getViolations() ).build();
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();

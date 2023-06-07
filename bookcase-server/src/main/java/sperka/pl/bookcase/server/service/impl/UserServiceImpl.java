@@ -2,6 +2,8 @@ package sperka.pl.bookcase.server.service.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import sperka.pl.bookcase.server.dto.CreateUserRequestDto;
+import sperka.pl.bookcase.server.dto.ModifyUserRequestDto;
 import sperka.pl.bookcase.server.dto.UserInfoDto;
 import sperka.pl.bookcase.server.entity.User;
 import sperka.pl.bookcase.server.exceptions.ValidationException;
@@ -9,8 +11,8 @@ import sperka.pl.bookcase.server.mailer.MailerFacade;
 import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.LogService;
 import sperka.pl.bookcase.server.service.UserService;
+import sperka.pl.bookcase.server.validators.UserDtoValidator;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -20,30 +22,30 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LogService logService;
     private final MailerFacade mailer;
+    private final UserDtoValidator userDtoValidator;
 
-    public UserServiceImpl( UserRepository userRepository, LogService logService, MailerFacade mailerFacade ) {
+    public UserServiceImpl( UserRepository userRepository, LogService logService, MailerFacade mailerFacade, UserDtoValidator userDtoValidator ) {
         this.userRepository = userRepository;
         this.logService = logService;
         this.mailer = mailerFacade;
+        this.userDtoValidator = userDtoValidator;
     }
 
     @Override
+    @Transactional
     public boolean initializeUsers() {
         if ( countUsers() > 0 ) {
             return false;
         }
 
-        if ( createUser( "admin", Collections.singletonList( "admin" ), "change@me", "" ) ) {
-            var user = userRepository.getUserByUsername( "admin" );
-            user.setPassword( "ChangeMe!" );
-            user.setResetPasswordToken( null );
-            userRepository.save( user );
+        var user = User.create( "admin", "admin", "change@me", "" );
+        user.setPassword( "ChangeMe!" );
 
-            logService.add( "Initialized users table", "system" );
-            return true;
-        }
+        userRepository.save( user );
+        logService.add( "Created new user " + user, "system" );
+        logService.add( "Initialized users table", "system" );
 
-        return false;
+        return true;
     }
 
     @Override
@@ -70,25 +72,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean createUser( String username, List< String > roles, String email, String locale ) {
-        User user = null;
-        try {
-            user = userRepository.getUserByUsername( username );
-        } catch ( Exception ignored ) {
+    public boolean createUser( CreateUserRequestDto dto ) {
+        var validationResult = userDtoValidator.validate( dto );
+
+        if ( !validationResult.isEmpty() ) {
+            throw new ValidationException( validationResult );
         }
 
-        if ( user == null ) {
-            user = User.create( username, String.join( ",", roles ), email, locale );
-            user.emptyPassword();
-            user.setResetPasswordToken( getRandomString( 64 ) );
+        var user = User.create( dto.getName(), String.join( ",", dto.getRoles() ), dto.getEmail(), dto.getLocale() );
+        user.setResetPasswordToken( getRandomString( 64 ) );
 
-            userRepository.save( user );
-            logService.add( "Created new user " + user, "system" );
-            mailer.sendWelcomeMail( user );
-            return true;
-        }
+        userRepository.save( user );
+        logService.add( "Created new user " + user, "system" );
+        mailer.sendWelcomeMail( user );
 
-        return false;
+        return true;
     }
 
     @Override
@@ -117,30 +115,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active, String email, String locale ) {
-        if ( id == null ) {
+    public boolean modifyUser( ModifyUserRequestDto dto ) {
+        if ( dto.getId() == null ) {
             return false;
         }
 
-        var user = userRepository.getById( id );
+        var validationResult = userDtoValidator.validate( dto );
+
+        if ( !validationResult.isEmpty() ) {
+            throw new ValidationException( validationResult );
+        }
+
+        var user = userRepository.getById( dto.getId() );
         if ( user != null ) {
-            if ( password != null && password.length() > 4 ) {
-                user.setPassword( password );
+            if ( dto.getPassword() != null && !dto.getPassword().isBlank() ) {
+                user.setPassword( dto.getPassword() );
             }
-            if ( roles != null ) {
-                user.setRoles( String.join( ",", roles ) );
+            if ( dto.getRoles() != null ) {
+                user.setRoles( String.join( ",", dto.getRoles() ) );
             }
-            if ( username != null && !username.isEmpty() ) {
-                user.setName( username );
+            if ( dto.getName() != null && !dto.getName().isBlank() ) {
+                user.setName( dto.getName() );
             }
-            if ( active != null ) {
-                user.setActive( active );
+            if ( user.getActive() != null ) {
+                user.setActive( user.getActive() );
             }
-            if ( email != null ) {
-                user.setEmail( email );
+            if ( user.getEmail() != null ) {
+                user.setEmail( user.getEmail() );
             }
-            if ( locale != null ) {
-                user.setLocale( locale );
+            if ( user.getLocale() != null ) {
+                user.setLocale( user.getLocale() );
             }
 
             userRepository.save( user );
@@ -185,6 +189,10 @@ public class UserServiceImpl implements UserService {
 
         if ( password.isBlank() ) {
             validationException.addViolation( "password", "reset-password.error.password-cannot-be-blank" );
+        }
+
+        if ( password.length() < 6 ) {
+            validationException.addViolation( "password", "reset-password.error.password-needs-to-be-6-chars" );
         }
 
         if ( !password.equals( passwordRepeat ) ) {

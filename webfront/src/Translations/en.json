@@ -86,9 +86,17 @@
   "reset-password.error.password-repeat-does-not-match": "Passwords don't match",
   "reset-password.error.password-cannot-be-blank": "Password cannot be blank",
   "reset-password.error.token-error": "Token is wrong or expired",
+  "reset-password.error.password-needs-to-be-6-chars": "Password must have at least 6 characters",
   "request-reset-password.dialog-title": "Reset password",
   "request-reset-password.success": "If provided e-mail exists in the system, you will receive link to reset your password.",
   "request-reset-password.email": "E-mail",
   "request-reset-password.save-button": "Reset password",
-  "request-reset-password.login": "Login"
+  "request-reset-password.login": "Login",
+  "user.error.name-must-not-be-empty": "Name must not be blank",
+  "user.error.roles-must-not-be-empty": "Roles must not be blank",
+  "user.error.email-must-not-be-empty": "E-mail must not be blank",
+  "user.error.name-already-exists": "Name already exists",
+  "user.error.email-already-exists": "E-mail already exists",
+  "user.error.user-needs-at-least-one-role": "User needs at least one role",
+  "user.error.password-needs-to-be-at-least-6-chars": "Password must have at least 6 characters"
 }
