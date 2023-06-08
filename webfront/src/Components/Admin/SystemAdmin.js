@@ -37,7 +37,8 @@ const SystemAdmin = () => {
             <RestoreBook bookId={ selectedDeletedBookId } open={ restoreBookDialogVisible }
                          onClose={ onRevertDialogClose }/>
             <Box sx={ { borderBottom: 1, borderColor: 'divider' } }>
-                <Tabs value={ tabValue } onChange={ ( e, val ) => setTabValue( val ) }>
+                <Tabs value={ tabValue } onChange={ ( e, val ) => setTabValue( val ) } variant={ "scrollable" }
+                      scrollButtons={ "auto" } allowScrollButtonsMobile>
                     <Tab label={ <FormattedMessage id="admin.users-management"/> }/>
                     <Tab label={ <FormattedMessage id="admin.logs"/> }/>
                     <Tab label={ <FormattedMessage id="admin.deleted-books"/> }/>
