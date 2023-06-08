@@ -10,10 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import sperka.pl.bookcase.server.entity.User;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,24 +32,25 @@ public class MailerFacadeImpl implements MailerFacade {
         this.applicationUrl = applicationUrl;
     }
 
-    private String loadTemplate( String locale, String templateName, Map< String, String > data, String extension ) {
-        final var templatesResource = MailerFacadeImpl.class.getResource( "/templates/" );
-        if ( templatesResource == null ) {
-            throw new IllegalArgumentException( "Templates directory does not exist." );
+    private String loadTemplate( String locale, String templateName, Map< String, String > data, String extension ) throws IOException {
+        var templateStream = MailerFacadeImpl.class.getResourceAsStream( "/templates/" + templateName + "_" + locale + "." + extension );
+        if ( templateStream == null ) {
+            templateStream = MailerFacadeImpl.class.getResourceAsStream( "/templates/" + templateName + "." + extension ); // default fallback
         }
-        File currTemplate = new File( templatesResource.getPath() + templateName + "_" + locale + "." + extension );
-        if ( !currTemplate.exists() ) {
-            currTemplate = new File( templatesResource.getPath() + templateName + "." + extension ); // default fallback
+        if ( templateStream == null ) {
+            throw new IllegalArgumentException( "Templates does not exist." );
         }
         try {
-            Template t = engine.parse( Files.readString( currTemplate.getAbsoluteFile().toPath(), StandardCharsets.UTF_8 ) );
+            Template t = engine.parse( new String( templateStream.readAllBytes(), StandardCharsets.UTF_8 ) );
             return t.data( data ).render();
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
             throw new IllegalArgumentException( "Templates does not exist." );
+        } finally {
+            templateStream.close();
         }
     }
 
-    private String loadHtmlTemplate( String locale, String templateName, Map< String, String > data ) {
+    private String loadHtmlTemplate( String locale, String templateName, Map< String, String > data ) throws IOException {
         return loadTemplate( locale, templateName, data, "html" );
     }
 
@@ -62,7 +61,7 @@ public class MailerFacadeImpl implements MailerFacade {
             data.put( "name", user.getName() );
             data.put( "activation_url", applicationUrl + "/set-password/" + user.getResetPasswordToken() );
             var template = loadHtmlTemplate( user.getLocale(), "welcome-mail", data );
-            mailer.send( Mail.withText( user.getEmail(),
+            mailer.send( Mail.withHtml( user.getEmail(),
                     loadTemplate( user.getLocale(), "welcome-mail-subject", Collections.emptyMap(), "txt" ), template ) );
         } catch ( Exception e ) {
             log.error( e.getMessage(), e );
@@ -76,7 +75,7 @@ public class MailerFacadeImpl implements MailerFacade {
             data.put( "name", user.getName() );
             data.put( "activation_url", applicationUrl + "/set-password/" + user.getResetPasswordToken() );
             var template = loadHtmlTemplate( user.getLocale(), "reset-password-mail", data );
-            mailer.send( Mail.withText( user.getEmail(),
+            mailer.send( Mail.withHtml( user.getEmail(),
                     loadTemplate( user.getLocale(), "reset-password-mail-subject", Collections.emptyMap(), "txt" ), template ) );
         } catch ( Exception e ) {
             log.error( e.getMessage(), e );

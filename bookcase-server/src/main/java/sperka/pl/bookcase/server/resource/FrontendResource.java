@@ -24,7 +24,10 @@ public class FrontendResource {
     @GET
     @Path( "/{fileName:.+}" )
     public Response getFrontendStaticFile( @PathParam( "fileName" ) String fileName ) throws IOException {
-        final InputStream inputStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName );
+        InputStream inputStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName );
+        if ( inputStream == null ) {
+            inputStream = FrontendResource.class.getResourceAsStream( "/frontend/index.html" );
+        }
         if ( inputStream != null ) {
             return Response
                     .ok( inputStream )

@@ -1,16 +1,17 @@
 package sperka.pl.bookcase.server.service;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import sperka.pl.bookcase.server.ServerTestProfile;
 import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.entity.Book;
 import sperka.pl.bookcase.server.repository.BookRepository;
-
-import jakarta.inject.Inject;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @QuarkusTest
+@TestProfile( ServerTestProfile.class )
 public class BookDatabaseSynchronizationServiceTest {
     @Inject
     BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
@@ -75,7 +77,7 @@ public class BookDatabaseSynchronizationServiceTest {
             Book book = data.getArgument( 0 );
 
             if ( book.getId() == null ) {
-                book.setId( (new Random()).nextLong() );
+                book.setId( ( new Random() ).nextLong() );
             } else {
                 booksDb.removeIf( b -> b.getId().equals( book.getId() ) );
             }

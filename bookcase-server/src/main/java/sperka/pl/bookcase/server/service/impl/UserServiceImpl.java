@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
         }
 
         var user = User.create( dto.getName(), String.join( ",", dto.getRoles() ), dto.getEmail(), dto.getLocale() );
+        user.emptyPassword();
         user.setResetPasswordToken( getRandomString( 64 ) );
 
         userRepository.save( user );
@@ -143,14 +144,14 @@ public class UserServiceImpl implements UserService {
             if ( dto.getName() != null && !dto.getName().isBlank() ) {
                 user.setName( dto.getName() );
             }
-            if ( user.getActive() != null ) {
-                user.setActive( user.getActive() );
+            if ( dto.getActive() != null ) {
+                user.setActive( dto.getActive() );
             }
-            if ( user.getEmail() != null ) {
-                user.setEmail( user.getEmail() );
+            if ( dto.getEmail() != null ) {
+                user.setEmail( dto.getEmail() );
             }
-            if ( user.getLocale() != null ) {
-                user.setLocale( user.getLocale() );
+            if ( dto.getLocale() != null ) {
+                user.setLocale( dto.getLocale() );
             }
 
             userRepository.save( user );

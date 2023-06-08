@@ -29,7 +29,6 @@ quarkus.datasource.username=bookshelf
 quarkus.datasource.password=some-random-password-to-db
 quarkus.datasource.jdbc.url=jdbc:mariadb://bookshelf-db:3306/bookshelf-db
 quarkus.datasource.jdbc.max-size=16
-quarkus.hibernate-orm.dialect=org.hibernate.dialect.MariaDB106Dialect
 quarkus.hibernate-orm.database.generation=update
 
 # Mailer - enter your proper configuration here
