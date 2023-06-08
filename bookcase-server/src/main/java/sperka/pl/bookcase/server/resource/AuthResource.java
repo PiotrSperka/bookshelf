@@ -14,7 +14,6 @@ import sperka.pl.bookcase.server.dto.GenericResponseDto;
 import sperka.pl.bookcase.server.dto.LoginRequestDto;
 import sperka.pl.bookcase.server.dto.LoginResponseDto;
 import sperka.pl.bookcase.server.service.AuthService;
-import sperka.pl.bookcase.server.service.UserService;
 
 @ApplicationScoped
 @Path( "/api/auth" )
@@ -22,12 +21,10 @@ import sperka.pl.bookcase.server.service.UserService;
 @Consumes( MediaType.APPLICATION_JSON )
 @Slf4j
 public class AuthResource {
-    private final UserService userService;
     private final AuthService authService;
 
     @Inject
-    public AuthResource( UserService userService, AuthService authService ) {
-        this.userService = userService;
+    public AuthResource( AuthService authService ) {
         this.authService = authService;
     }
 
@@ -66,16 +63,5 @@ public class AuthResource {
         }
 
         return Response.status( Response.Status.UNAUTHORIZED ).entity( new GenericResponseDto( "Cannot refresh token" ) ).build();
-    }
-
-    @Path( "init" )
-    @PermitAll
-    @GET
-    public Response initUsers() {
-        if ( userService.initializeUsers() ) {
-            return Response.ok().build();
-        } else {
-            return Response.status( Response.Status.FORBIDDEN ).build();
-        }
     }
 }

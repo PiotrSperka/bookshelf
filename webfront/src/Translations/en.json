@@ -98,5 +98,11 @@
   "user.error.name-already-exists": "Name already exists",
   "user.error.email-already-exists": "E-mail already exists",
   "user.error.user-needs-at-least-one-role": "User needs at least one role",
-  "user.error.password-needs-to-be-at-least-6-chars": "Password must have at least 6 characters"
+  "user.error.password-needs-to-be-at-least-6-chars": "Password must have at least 6 characters",
+  "installer.dialog-title": "First-time configuration",
+  "installer.info": "Enter data to create first administrator user.",
+  "installer.name": "Name",
+  "installer.email": "E-mail",
+  "installer.password": "Password",
+  "installer.create": "Create"
 }

@@ -98,5 +98,11 @@
   "user.error.name-already-exists": "Nazwa już istnieje",
   "user.error.email-already-exists": "E-mail już istnieje",
   "user.error.user-needs-at-least-one-role": "Użytkownik potrzebuje przynajmniej jedną rolę",
-  "user.error.password-needs-to-be-at-least-6-chars": "Hasło musi mieć przynajmniej 6 znaków"
+  "user.error.password-needs-to-be-at-least-6-chars": "Hasło musi mieć przynajmniej 6 znaków",
+  "installer.dialog-title": "Pierwsza konfiguracja",
+  "installer.info": "Wprowadź dane aby stworzyć konto administratora.",
+  "installer.name": "Nazwa",
+  "installer.email": "E-mail",
+  "installer.password": "Hasło",
+  "installer.create": "Utwórz"
 }

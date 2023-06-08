@@ -22,7 +22,8 @@ const App = () => {
     }, [] )
 
     const excludeLogin = () => {
-        return window.location.pathname.startsWith( "/set-password/" ) === false || window.location.pathname.startsWith( "/lost-password" ) === false;
+        return window.location.pathname.startsWith( "/set-password/" ) === false
+            || window.location.pathname.startsWith( "/lost-password" ) === false;
     }
 
     return (

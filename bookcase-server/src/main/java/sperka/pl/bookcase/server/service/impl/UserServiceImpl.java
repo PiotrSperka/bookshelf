@@ -3,6 +3,7 @@ package sperka.pl.bookcase.server.service.impl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import sperka.pl.bookcase.server.dto.CreateUserRequestDto;
+import sperka.pl.bookcase.server.dto.InitializeUserRequestDto;
 import sperka.pl.bookcase.server.dto.ModifyUserRequestDto;
 import sperka.pl.bookcase.server.dto.UserInfoDto;
 import sperka.pl.bookcase.server.entity.User;
@@ -33,13 +34,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean initializeUsers() {
+    public boolean initializeUser( InitializeUserRequestDto dto ) {
         if ( countUsers() > 0 ) {
             return false;
         }
 
-        var user = User.create( "admin", "admin", "change@me", "" );
-        user.setPassword( "ChangeMe!" );
+        var violations = userDtoValidator.validate( dto );
+        if ( !violations.isEmpty() ) {
+            throw new ValidationException( violations );
+        }
+
+        var user = User.create( dto.getName(), "admin", dto.getEmail(), "" );
+        user.setPassword( dto.getPassword() );
 
         userRepository.save( user );
         logService.add( "Created new user " + user, "system" );
@@ -98,7 +104,7 @@ public class UserServiceImpl implements UserService {
         if ( oldPassword.equals( newPassword ) ) {
             return false;
         }
-        if ( newPassword.length() < 4 ) {
+        if ( newPassword.length() < 6 ) {
             return false;
         }
 

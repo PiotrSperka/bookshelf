@@ -1,14 +1,14 @@
 package sperka.pl.bookcase.server.auth;
 
 import io.jsonwebtoken.security.Keys;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
-@Singleton
+@ApplicationScoped
 public class SigningKey {
     private final String key;
 

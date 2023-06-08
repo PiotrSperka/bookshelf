@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Validator;
 import sperka.pl.bookcase.server.dto.CreateUserRequestDto;
+import sperka.pl.bookcase.server.dto.InitializeUserRequestDto;
 import sperka.pl.bookcase.server.dto.ModifyUserRequestDto;
 import sperka.pl.bookcase.server.repository.UserRepository;
 
@@ -38,6 +39,20 @@ public class UserDtoValidator {
 
         if ( dto.getRoles().isEmpty() ) {
             result.put( "roles", "user.error.user-needs-at-least-one-role" );
+        }
+
+        return result;
+    }
+
+    public Map< String, String > validate( InitializeUserRequestDto dto ) {
+        var result = new HashMap< String, String >();
+
+        for ( var violation : validator.validate( dto ) ) {
+            result.put( violation.getPropertyPath().toString(), violation.getMessage() );
+        }
+
+        if ( dto.getPassword().length() < 6 ) {
+            result.put( "password", "user.error.password-needs-to-be-at-least-6-chars" );
         }
 
         return result;
