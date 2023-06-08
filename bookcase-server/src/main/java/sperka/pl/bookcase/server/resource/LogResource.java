@@ -1,14 +1,14 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import sperka.pl.bookcase.server.auth.Roles;
 import sperka.pl.bookcase.server.dto.LogFilterDto;
 import sperka.pl.bookcase.server.service.LogService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path( "/api/logs" )

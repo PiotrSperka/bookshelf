@@ -4,10 +4,10 @@ import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.repository.BookRepository;
 import sperka.pl.bookcase.server.validators.annotations.BookSignatureNotExists;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 @ApplicationScoped
 public class BookSignatureNotExistsValidator implements ConstraintValidator< BookSignatureNotExists, BookDto > {

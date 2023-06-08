@@ -17,15 +17,19 @@ import java.util.stream.Collectors;
 public class UserInfoDto {
     private Long id;
     private String name;
-    private List<String> roles;
+    private List< String > roles;
     private Boolean active;
+    private String email;
+    private String locale;
 
-    public static UserInfoDto fromEntity( User user) {
+    public static UserInfoDto fromEntity( User user ) {
         var dto = new UserInfoDto();
         dto.setId( user.getId() );
         dto.setName( user.getName() );
         dto.setRoles( Arrays.stream( user.getRoles().split( "," ) ).collect( Collectors.toList() ) );
         dto.setActive( user.getActive() );
+        dto.setEmail( user.getEmail() );
+        dto.setLocale( user.getLocale() );
 
         return dto;
     }

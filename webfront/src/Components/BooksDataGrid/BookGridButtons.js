@@ -7,12 +7,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddEditBook from "./AddEditBook";
 import DeleteBook from "./DeleteBook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BookGridButtons = props => {
     const [ addDialogOpen, setAddDialogOpen ] = useState( false );
     const [ editDialogOpen, setEditDialogOpen ] = useState( false );
     const [ deleteDialogOpen, setDeleteDialogOpen ] = useState( false );
+
+    useEffect( () => {
+        if ( props.editTrigger !== null && props.selectedBookId != null ) {
+            setEditDialogOpen( true );
+        }
+    }, [ props.editTrigger ] )
 
     const handleBooksChanged = refresh => {
         setAddDialogOpen( false );

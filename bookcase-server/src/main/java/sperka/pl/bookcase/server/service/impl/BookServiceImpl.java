@@ -8,9 +8,9 @@ import sperka.pl.bookcase.server.repository.BookRepository;
 import sperka.pl.bookcase.server.service.BookService;
 import sperka.pl.bookcase.server.service.LogService;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
-import javax.validation.Validator;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Validator;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final LogService logService;
-
     private final Validator validator;
 
     public BookServiceImpl( BookRepository bookRepository, LogService logService, Validator validator ) {

@@ -5,10 +5,10 @@ import sperka.pl.bookcase.server.dto.BookFilterDto;
 import sperka.pl.bookcase.server.entity.Book;
 import sperka.pl.bookcase.server.repository.BookRepository;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;

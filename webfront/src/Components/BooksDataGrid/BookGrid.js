@@ -48,6 +48,7 @@ const BookGrid = forwardRef( ( props, ref ) => {
     const getBooksCountApi = useApi();
 
     const [ selectedBookId, setSelectedBookId ] = useState( null );
+    const [ rowDoubleClickTrigger, setRowDoubleClickTrigger ] = useState( 0 );
 
     const { isLoggedIn } = useUserContext();
 
@@ -101,6 +102,10 @@ const BookGrid = forwardRef( ( props, ref ) => {
         }
     }
 
+    const rowDoubleClicked = () => {
+        setRowDoubleClickTrigger( prevState => prevState + 1 );
+    }
+
     const loadBooks = () => {
         if ( isLoggedIn() ) {
             getBooksPageApi.request( getBooksPageParams( paginationModel.page, paginationModel.pageSize, filters, props.deleted ) )
@@ -113,7 +118,8 @@ const BookGrid = forwardRef( ( props, ref ) => {
 
     return ( <div className={ styles.main }>
         { props.hideButtons !== true &&
-            <BookGridButtons selectedBookId={ selectedBookId } onBooksChanged={ loadBooks }/> }
+            <BookGridButtons selectedBookId={ selectedBookId } onBooksChanged={ loadBooks }
+                             editTrigger={ rowDoubleClickTrigger }/> }
         <BookFilters onFilterChanged={ filterChanged }/>
         <DataGrid className={ styles.dataGrid } columns={ cols } rows={ books } autoHeight={ true }
                   rowCount={ rowCountState }
@@ -131,6 +137,7 @@ const BookGrid = forwardRef( ( props, ref ) => {
                   paginationMode="server"
                   onPaginationModelChange={ setPaginationModel }
                   onSortModelChange={ setSortModel }
+                  onRowDoubleClick={ rowDoubleClicked }
                   sortingMode="server"
                   getRowId={ ( row ) => row.remoteId }
                   getRowHeight={ () => 'auto' }

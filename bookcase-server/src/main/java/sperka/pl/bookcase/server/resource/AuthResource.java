@@ -1,21 +1,19 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import sperka.pl.bookcase.server.auth.JwtUserPrincipal;
 import sperka.pl.bookcase.server.dto.GenericResponseDto;
 import sperka.pl.bookcase.server.dto.LoginRequestDto;
 import sperka.pl.bookcase.server.dto.LoginResponseDto;
 import sperka.pl.bookcase.server.service.AuthService;
-import sperka.pl.bookcase.server.service.UserService;
-
-import javax.annotation.security.PermitAll;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 @ApplicationScoped
 @Path( "/api/auth" )
@@ -23,12 +21,10 @@ import javax.ws.rs.core.SecurityContext;
 @Consumes( MediaType.APPLICATION_JSON )
 @Slf4j
 public class AuthResource {
-    UserService userService;
-    AuthService authService;
+    private final AuthService authService;
 
     @Inject
-    public AuthResource( UserService userService, AuthService authService ) {
-        this.userService = userService;
+    public AuthResource( AuthService authService ) {
         this.authService = authService;
     }
 
@@ -67,16 +63,5 @@ public class AuthResource {
         }
 
         return Response.status( Response.Status.UNAUTHORIZED ).entity( new GenericResponseDto( "Cannot refresh token" ) ).build();
-    }
-
-    @Path( "init" )
-    @PermitAll
-    @GET
-    public Response initUsers() {
-        if ( userService.initializeUsers() ) {
-            return Response.ok().build();
-        } else {
-            return Response.status( Response.Status.FORBIDDEN ).build();
-        }
     }
 }

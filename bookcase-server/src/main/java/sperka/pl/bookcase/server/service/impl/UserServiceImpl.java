@@ -1,35 +1,54 @@
 package sperka.pl.bookcase.server.service.impl;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import sperka.pl.bookcase.server.dto.CreateUserRequestDto;
+import sperka.pl.bookcase.server.dto.InitializeUserRequestDto;
+import sperka.pl.bookcase.server.dto.ModifyUserRequestDto;
 import sperka.pl.bookcase.server.dto.UserInfoDto;
 import sperka.pl.bookcase.server.entity.User;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
+import sperka.pl.bookcase.server.mailer.MailerFacade;
 import sperka.pl.bookcase.server.repository.UserRepository;
 import sperka.pl.bookcase.server.service.LogService;
 import sperka.pl.bookcase.server.service.UserService;
+import sperka.pl.bookcase.server.validators.UserDtoValidator;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LogService logService;
+    private final MailerFacade mailer;
+    private final UserDtoValidator userDtoValidator;
 
-    public UserServiceImpl( UserRepository userRepository, LogService logService ) {
+    public UserServiceImpl( UserRepository userRepository, LogService logService, MailerFacade mailerFacade, UserDtoValidator userDtoValidator ) {
         this.userRepository = userRepository;
         this.logService = logService;
+        this.mailer = mailerFacade;
+        this.userDtoValidator = userDtoValidator;
     }
 
     @Override
-    public boolean initializeUsers() {
+    @Transactional
+    public boolean initializeUser( InitializeUserRequestDto dto ) {
         if ( countUsers() > 0 ) {
             return false;
         }
 
-        createUser( "admin", "ChangeMe!", Collections.singletonList( "admin" ) );
+        var violations = userDtoValidator.validate( dto );
+        if ( !violations.isEmpty() ) {
+            throw new ValidationException( violations );
+        }
 
+        var user = User.create( dto.getName(), "admin", dto.getEmail(), "" );
+        user.setPassword( dto.getPassword() );
+
+        userRepository.save( user );
+        logService.add( "Created new user " + user, "system" );
         logService.add( "Initialized users table", "system" );
 
         return true;
@@ -59,21 +78,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean createUser( String username, String password, List< String > roles ) {
-        User user = null;
-        try {
-            user = userRepository.getUserByUsername( username );
-        } catch ( Exception ignored ) {
+    public boolean createUser( CreateUserRequestDto dto ) {
+        var validationResult = userDtoValidator.validate( dto );
+
+        if ( !validationResult.isEmpty() ) {
+            throw new ValidationException( validationResult );
         }
 
-        if ( user == null ) {
-            user = User.create( username, password, String.join( ",", roles ) );
-            userRepository.save( user );
-            logService.add( "Created new user " + user, "system" );
-            return true;
-        }
+        var user = User.create( dto.getName(), String.join( ",", dto.getRoles() ), dto.getEmail(), dto.getLocale() );
+        user.emptyPassword();
+        user.setResetPasswordToken( getRandomString( 64 ) );
 
-        return false;
+        userRepository.save( user );
+        logService.add( "Created new user " + user, "system" );
+        mailer.sendWelcomeMail( user );
+
+        return true;
     }
 
     @Override
@@ -85,7 +105,7 @@ public class UserServiceImpl implements UserService {
         if ( oldPassword.equals( newPassword ) ) {
             return false;
         }
-        if ( newPassword.length() < 4 ) {
+        if ( newPassword.length() < 6 ) {
             return false;
         }
 
@@ -102,24 +122,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active ) {
-        if ( id == null ) {
+    public boolean modifyUser( ModifyUserRequestDto dto ) {
+        if ( dto.getId() == null ) {
             return false;
         }
 
-        var user = userRepository.getById( id );
+        var validationResult = userDtoValidator.validate( dto );
+
+        if ( !validationResult.isEmpty() ) {
+            throw new ValidationException( validationResult );
+        }
+
+        var user = userRepository.getById( dto.getId() );
         if ( user != null ) {
-            if ( password != null && password.length() > 4 ) {
-                user.setPassword( password );
+            if ( dto.getPassword() != null && !dto.getPassword().isBlank() ) {
+                user.setPassword( dto.getPassword() );
             }
-            if ( roles != null ) {
-                user.setRoles( String.join( ",", roles ) );
+            if ( dto.getRoles() != null ) {
+                user.setRoles( String.join( ",", dto.getRoles() ) );
             }
-            if ( username != null && !username.isEmpty() ) {
-                user.setName( username );
+            if ( dto.getName() != null && !dto.getName().isBlank() ) {
+                user.setName( dto.getName() );
             }
-            if ( active != null ) {
-                user.setActive( active );
+            if ( dto.getActive() != null ) {
+                user.setActive( dto.getActive() );
+            }
+            if ( dto.getEmail() != null ) {
+                user.setEmail( dto.getEmail() );
+            }
+            if ( dto.getLocale() != null ) {
+                user.setLocale( dto.getLocale() );
             }
 
             userRepository.save( user );
@@ -150,5 +182,70 @@ public class UserServiceImpl implements UserService {
         }
 
         return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean resetPassword( String token, String password, String passwordRepeat ) {
+        var validationException = new ValidationException();
+        User user = userRepository.getUserByResetPasswordToken( token );
+
+        if ( user == null ) {
+            validationException.addViolation( "generic", "reset-password.error.token-error" );
+        }
+
+        if ( password.isBlank() ) {
+            validationException.addViolation( "password", "reset-password.error.password-cannot-be-blank" );
+        }
+
+        if ( password.length() < 6 ) {
+            validationException.addViolation( "password", "reset-password.error.password-needs-to-be-6-chars" );
+        }
+
+        if ( !password.equals( passwordRepeat ) ) {
+            validationException.addViolation( "password", "reset-password.error.password-repeat-does-not-match" );
+        }
+
+        if ( !validationException.isEmpty() ) {
+            throw validationException;
+        }
+
+        if ( user != null ) {
+            user.setResetPasswordToken( null );
+            user.setPassword( password );
+            userRepository.save( user );
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean sendResetPasswordToken( String email ) {
+        if ( email == null || email.isBlank() ) {
+            return false;
+        }
+
+        var user = userRepository.getUserByEmail( email );
+        if ( user != null ) {
+            user.setResetPasswordToken( getRandomString( 64 ) );
+            userRepository.save( user );
+            logService.add( "Requested password reset for " + user, "system" );
+            mailer.sendPasswordResetMail( user );
+            return true;
+        }
+
+        return false;
+    }
+
+    private String getRandomString( int length ) {
+        final int leftLimit = 48; // numeral '0'
+        final int rightLimit = 122; // letter 'z'
+        return new Random().ints( leftLimit, rightLimit + 1 )
+                .filter( i -> ( i <= 57 || i >= 65 ) && ( i <= 90 || i >= 97 ) )
+                .limit( length )
+                .collect( StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append )
+                .toString();
     }
 }

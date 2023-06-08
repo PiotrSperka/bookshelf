@@ -1,11 +1,14 @@
 package sperka.pl.bookcase.server.service;
 
+import sperka.pl.bookcase.server.dto.CreateUserRequestDto;
+import sperka.pl.bookcase.server.dto.InitializeUserRequestDto;
+import sperka.pl.bookcase.server.dto.ModifyUserRequestDto;
 import sperka.pl.bookcase.server.dto.UserInfoDto;
 
 import java.util.List;
 
 public interface UserService {
-    boolean initializeUsers();
+    boolean initializeUser( InitializeUserRequestDto dto );
 
     List< UserInfoDto > getAll();
 
@@ -15,11 +18,15 @@ public interface UserService {
 
     long countUsers();
 
-    boolean createUser( String username, String password, List< String > roles );
+    boolean createUser( CreateUserRequestDto dto );
 
     boolean modifyPassword( String username, String oldPassword, String newPassword );
 
-    boolean modifyUser( Long id, String username, String password, List< String > roles, Boolean active );
+    boolean modifyUser( ModifyUserRequestDto dto );
 
     boolean deleteUser( Long id, String currentUsername );
+
+    boolean resetPassword( String token, String password, String passwordRepeat );
+
+    boolean sendResetPasswordToken( String email );
 }

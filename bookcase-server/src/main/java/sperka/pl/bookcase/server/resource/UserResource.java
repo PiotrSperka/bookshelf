@@ -1,24 +1,25 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import sperka.pl.bookcase.server.auth.Roles;
 import sperka.pl.bookcase.server.dto.*;
+import sperka.pl.bookcase.server.exceptions.ValidationException;
 import sperka.pl.bookcase.server.service.UserService;
-
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 @ApplicationScoped
 @Path( "/api/user" )
 @Produces( MediaType.APPLICATION_JSON )
 @Consumes( MediaType.APPLICATION_JSON )
 public class UserResource {
-    UserService userService;
+    private final UserService userService;
 
     @Inject
     public UserResource( UserService userService ) {
@@ -48,9 +49,13 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response addUser( CreateUserRequestDto request ) {
-        var result = userService.createUser( request.getName(), request.getPassword(), request.getRoles() );
-        if ( result ) {
-            return Response.ok( new GenericResponseDto( "OK" ) ).build();
+        try {
+            var result = userService.createUser( request );
+            if ( result ) {
+                return Response.ok( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getViolations() ).build();
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
@@ -60,9 +65,13 @@ public class UserResource {
     @RolesAllowed( Roles.ADMIN )
     @POST
     public Response editUser( ModifyUserRequestDto request ) {
-        var result = userService.modifyUser( request.getId(), request.getName(), request.getPassword(), request.getRoles(), request.getActive() );
-        if ( result ) {
-            return Response.ok( new GenericResponseDto( "OK" ) ).build();
+        try {
+            var result = userService.modifyUser( request );
+            if ( result ) {
+                return Response.ok( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.FORBIDDEN ).entity( ex.getViolations() ).build();
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
@@ -93,6 +102,29 @@ public class UserResource {
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).build();
+    }
+
+    @POST
+    @PermitAll
+    @Path( "/reset-password/{token}" )
+    public Response resetPassword( @PathParam( "token" ) String token, ResetPasswordDto dto ) {
+        try {
+            if ( userService.resetPassword( token, dto.getPassword(), dto.getPasswordRepeat() ) ) {
+                return Response.status( Response.Status.OK ).entity( new GenericResponseDto( "OK" ) ).build();
+            }
+        } catch ( ValidationException ex ) {
+            return Response.status( Response.Status.BAD_REQUEST ).entity( ex.getViolations() ).build();
+        }
+
+        return Response.status( Response.Status.BAD_REQUEST ).entity( new GenericResponseDto( "Wrong input" ) ).build();
+    }
+
+    @POST
+    @PermitAll
+    @Path( "/request-reset-password" )
+    public Response requestResetPassword( RequestResetPasswordDto dto ) {
+        userService.sendResetPasswordToken( dto.getEmail() );
+        return Response.status( Response.Status.OK ).entity( new GenericResponseDto( "OK" ) ).build();
     }
 
     @GET

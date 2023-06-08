@@ -4,7 +4,7 @@ package sperka.pl.bookcase.server.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;

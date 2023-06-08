@@ -1,14 +1,13 @@
 package sperka.pl.bookcase.server.resource;
 
-import org.h2.util.IOUtils;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -16,8 +15,6 @@ import java.net.URLConnection;
 @ApplicationScoped
 @Path( "/" )
 public class FrontendResource {
-    private static final String FALLBACK_RESOURCE = "/frontend/index.html";
-
     @GET
     @Path( "/" )
     public Response getFrontendRoot() throws IOException {
@@ -27,15 +24,14 @@ public class FrontendResource {
     @GET
     @Path( "/{fileName:.+}" )
     public Response getFrontendStaticFile( @PathParam( "fileName" ) String fileName ) throws IOException {
-        final InputStream requestedFileStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName );
-        final InputStream inputStream = requestedFileStream != null ?
-                requestedFileStream :
-                FrontendResource.class.getResourceAsStream( FALLBACK_RESOURCE );
-        final StreamingOutput streamingOutput = outputStream -> IOUtils.copy( inputStream, outputStream );
+        InputStream inputStream = FrontendResource.class.getResourceAsStream( "/frontend/" + fileName );
+        if ( inputStream == null ) {
+            inputStream = FrontendResource.class.getResourceAsStream( "/frontend/index.html" );
+        }
         if ( inputStream != null ) {
             return Response
-                    .ok( streamingOutput )
-                    .cacheControl( CacheControl.valueOf( "max-age=900" ) )
+                    .ok( inputStream )
+                    .cacheControl( RuntimeDelegate.getInstance().createHeaderDelegate( CacheControl.class ).fromString( "max-age=900" ) )
                     .type( URLConnection.guessContentTypeFromStream( inputStream ) )
                     .build();
         }

@@ -1,15 +1,15 @@
 package sperka.pl.bookcase.server.resource;
 
+import jakarta.annotation.security.RolesAllowed;
 import sperka.pl.bookcase.server.auth.Roles;
 import sperka.pl.bookcase.server.dto.BookDto;
 import sperka.pl.bookcase.server.helpers.InstantParam;
 import sperka.pl.bookcase.server.service.BookDatabaseSynchronizationService;
 
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 @ApplicationScoped
@@ -18,7 +18,7 @@ import java.util.List;
 @Consumes( MediaType.APPLICATION_JSON )
 @RolesAllowed( { Roles.ADMIN, Roles.USER } )
 public class SynchronizationResource {
-    BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
+    private final BookDatabaseSynchronizationService bookDatabaseSynchronizationService;
 
     @Inject
     public SynchronizationResource( BookDatabaseSynchronizationService bookDatabaseSynchronizationService ) {

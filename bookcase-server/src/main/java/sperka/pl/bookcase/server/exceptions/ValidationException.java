@@ -4,13 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidationException extends RuntimeException {
-    private final Map<String, String> violations = new HashMap<>();
+    private final Map< String, String > violations;
 
-    public Map<String, String> getViolations() {
+    public ValidationException() {
+        this.violations = new HashMap<>();
+    }
+
+    public ValidationException( Map< String, String > violations ) {
+        this.violations = violations;
+    }
+
+    public Map< String, String > getViolations() {
         return violations;
     }
 
-    public void addViolation(String field, String message) {
+    public void addViolation( String field, String message ) {
         violations.put( field, message );
     }
 

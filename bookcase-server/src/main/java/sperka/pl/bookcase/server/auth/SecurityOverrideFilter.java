@@ -1,31 +1,30 @@
 package sperka.pl.bookcase.server.auth;
 
 import io.jsonwebtoken.Jwts;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import lombok.extern.slf4j.Slf4j;
 import sperka.pl.bookcase.server.service.AuthService;
-
-import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 
 @Slf4j
 @Provider
 @PreMatching
 public class SecurityOverrideFilter implements ContainerRequestFilter {
     private final AuthService authService;
+    private final SigningKey signingKey;
 
     @Inject
-    public SecurityOverrideFilter( AuthService authService ) {
+    public SecurityOverrideFilter( AuthService authService, SigningKey signingKey ) {
         this.authService = authService;
+        this.signingKey = signingKey;
     }
 
     @Override
-    public void filter( ContainerRequestContext containerRequestContext ) throws IOException {
-
+    public void filter( ContainerRequestContext containerRequestContext ) {
         String authorization = containerRequestContext.getHeaders().getFirst( "Authorization" );
         if ( authorization != null && authorization.startsWith( "Bearer " ) ) {
             try {
@@ -35,7 +34,7 @@ public class SecurityOverrideFilter implements ContainerRequestFilter {
                     containerRequestContext.abortWith( Response.status( Response.Status.UNAUTHORIZED ).build() );
                 }
 
-                var jwt = Jwts.parserBuilder().setSigningKey( SigningKey.getKey() ).build().parseClaimsJws( token );
+                var jwt = Jwts.parserBuilder().setSigningKey( signingKey.getKey() ).build().parseClaimsJws( token );
                 containerRequestContext.setSecurityContext( new JwtSecurityContext( jwt, containerRequestContext.getSecurityContext() ) );
             } catch ( Exception exception ) {
                 log.error( authorization );
