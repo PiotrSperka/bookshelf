@@ -1,15 +1,15 @@
 package sperka.pl.bookcase.server.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "logs")
+@Table( name = "logs" )
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,5 +24,6 @@ public class Log implements IdProvider {
     @CreationTimestamp
     private Instant date;
 
+    @Column( length = 16777215, columnDefinition = "Mediumtext" )
     private String log;
 }
