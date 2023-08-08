@@ -1,9 +1,13 @@
 import styles from "./TopBarUserMenu.module.css"
-import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, Typography } from "@mui/material";
 import { useUserContext } from "../../UserContextProvider";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
+import StorageIcon from '@mui/icons-material/Storage';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const TopBarUserMenu = () => {
     const navigate = useNavigate();
@@ -49,19 +53,31 @@ const TopBarUserMenu = () => {
                   transformOrigin={ { vertical: 'top', horizontal: 'right' } } open={ Boolean( anchorElUser ) }
                   onClose={ handleCloseUserMenu }>
                 <MenuItem onClick={ handleDatabaseSettings }>
-                    <Typography className={ styles.menuLabel } textAlign={ "center" }><FormattedMessage
+                    <ListItemIcon>
+                        <StorageIcon fontSize={ "small" }/>
+                    </ListItemIcon>
+                    <Typography className={ styles.menuLabel }><FormattedMessage
                         id="topmenu.database"/></Typography>
                 </MenuItem>
                 <MenuItem onClick={ handleUserSettings }>
-                    <Typography className={ styles.menuLabel } textAlign={ "center" }><FormattedMessage
+                    <ListItemIcon>
+                        <SettingsIcon fontSize={ "small" }/>
+                    </ListItemIcon>
+                    <Typography className={ styles.menuLabel }><FormattedMessage
                         id="topmenu.settings"/></Typography>
                 </MenuItem>
                 { hasRole( "admin" ) && <MenuItem onClick={ handleSystemSettings }>
-                    <Typography className={ styles.menuLabel } textAlign={ "center" }><FormattedMessage
+                    <ListItemIcon>
+                        <SupervisorAccountIcon fontSize={ "small" }/>
+                    </ListItemIcon>
+                    <Typography className={ styles.menuLabel }><FormattedMessage
                         id="topmenu.administration"/></Typography>
                 </MenuItem> }
                 <MenuItem onClick={ handleLogout }>
-                    <Typography className={ styles.menuLabel } textAlign={ "center" }><FormattedMessage
+                    <ListItemIcon>
+                        <LogoutIcon fontSize={ "small" }/>
+                    </ListItemIcon>
+                    <Typography className={ styles.menuLabel }><FormattedMessage
                         id="topmenu.logout"/></Typography>
                 </MenuItem>
             </Menu>

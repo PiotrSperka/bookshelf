@@ -12,7 +12,6 @@ import BooksDatabaseViewer from "./Components/BooksDataGrid/BooksDatabaseViewer"
 import ResetPassword from "./Components/Auth/ResetPassword";
 import RequestNewPassword from "./Components/Auth/RequestNewPassword";
 
-
 const App = () => {
     const intl = useIntl();
     const { isLoggedIn } = useUserContext();
