@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FormattedMessage } from "react-intl";
 import StorageIcon from '@mui/icons-material/Storage';
 import SettingsIcon from '@mui/icons-material/Settings';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -24,6 +25,11 @@ const TopBarUserMenu = () => {
 
     const handleUserSettings = () => {
         navigate( '/user' );
+        handleCloseUserMenu();
+    }
+
+    const handleBookScraping = () => {
+        navigate( '/book-scraping' );
         handleCloseUserMenu();
     }
 
@@ -65,6 +71,13 @@ const TopBarUserMenu = () => {
                     </ListItemIcon>
                     <Typography className={ styles.menuLabel }><FormattedMessage
                         id="topmenu.settings"/></Typography>
+                </MenuItem>
+                <MenuItem onClick={ handleBookScraping }>
+                    <ListItemIcon>
+                        <CloudDownloadIcon fontSize={ "small" }/>
+                    </ListItemIcon>
+                    <Typography className={ styles.menuLabel }><FormattedMessage
+                        id="topmenu.book-scraping"/></Typography>
                 </MenuItem>
                 { hasRole( "admin" ) && <MenuItem onClick={ handleSystemSettings }>
                     <ListItemIcon>

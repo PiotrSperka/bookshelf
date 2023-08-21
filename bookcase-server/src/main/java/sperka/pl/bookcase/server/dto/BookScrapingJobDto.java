@@ -13,6 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class BookScrapingJobDto {
     private Long id;
+    private String title;
     private String bookScraperType;
     private String bookScrapingState;
     private Instant createDate;
@@ -22,6 +23,7 @@ public class BookScrapingJobDto {
     public String toString() {
         return "BookScrapingJobDto{" +
                 "id=" + id +
+                ", title='" + title + '\'' +
                 ", bookScraperType='" + bookScraperType + '\'' +
                 ", bookScrapingState='" + bookScrapingState + '\'' +
                 ", createDate=" + createDate +

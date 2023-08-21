@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jetbrains.annotations.NotNull;
 import sperka.pl.bookcase.bookscrapers.CzechMedievalSourcesScraper;
 import sperka.pl.bookcase.server.dto.BookScrapingJobDto;
 import sperka.pl.bookcase.server.entity.BookScrapingJob;
@@ -70,17 +71,21 @@ public class BookScrapingServiceImpl implements BookScrapingService {
         }
     }
 
-    private void runBookScraping( BookScrapingJob job ) {
+    private void runBookScraping( @NotNull BookScrapingJob job ) {
         job.setBookScrapingState( BookScrapingState.PROCESSING );
         bookScrapingJobRepository.save( job );
         try {
+            var title = CzechMedievalSourcesScraper.getBookTitle( job.getInputData() );
             var pdf = CzechMedievalSourcesScraper.getBookAsPdf( job.getInputData() );
-            var filename = Path.of( bookScrapingDirectory, Instant.now().toEpochMilli() + ".pdf" ).toString();
-            try ( var fileStream = new FileOutputStream( filename ) ) {
+            var filename = Instant.now().toEpochMilli() + ".pdf";
+            var filepath = Path.of( bookScrapingDirectory, filename ).toString();
+
+            try ( var fileStream = new FileOutputStream( filepath ) ) {
                 pdf.writeTo( fileStream );
             }
 
-            job.setFilePath( filename );
+            job.setTitle( title.isBlank() ? filename : title );
+            job.setFilePath( filepath );
             job.setBookScrapingState( BookScrapingState.READY );
             bookScrapingJobRepository.save( job );
         } catch ( IOException ex ) {

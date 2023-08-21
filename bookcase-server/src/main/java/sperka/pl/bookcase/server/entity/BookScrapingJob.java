@@ -25,6 +25,9 @@ public class BookScrapingJob implements IdProvider {
     @GeneratedValue( generator = "bookScrapingJobsSeq" )
     private Long id;
 
+    @Column( length = 1024, columnDefinition = "Text" )
+    private String title;
+
     @Enumerated( EnumType.STRING )
     @Column( nullable = false )
     private BookScraperType bookScraperType;
@@ -44,7 +47,7 @@ public class BookScrapingJob implements IdProvider {
     private String filePath;
 
     public BookScrapingJobDto toDto() {
-        return new BookScrapingJobDto( id, bookScraperType.name(), bookScrapingState.name(), createDate, inputData );
+        return new BookScrapingJobDto( id, title != null ? title : "", bookScraperType.name(), bookScrapingState.name(), createDate, inputData );
     }
 
     public static @NotNull BookScrapingJob fromDto( @NotNull BookScrapingJobDto dto ) {

@@ -56,6 +56,20 @@ public class CzechMedievalSourcesScraper {
         return null;
     }
 
+    public static @NotNull String getBookTitle( String url ) throws IOException {
+        var title = "";
+
+        try {
+            var doc = Jsoup.connect( url ).get();
+            var sideMenu = doc.selectFirst( "div#page_listing" ).html();
+            title = sideMenu.split( "<br>" )[ 0 ].trim();
+        } catch ( NullPointerException e ) {
+            System.err.println( e.getMessage() );
+        }
+
+        return title;
+    }
+
     public static @NotNull ByteArrayOutputStream getBookAsPdf( String url ) throws IOException {
         var output = new ByteArrayOutputStream();
 
