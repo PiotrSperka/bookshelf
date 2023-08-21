@@ -13,6 +13,7 @@
         <module>bookcase-commons</module>
         <module>bookcase-server</module>
         <module>bookcase-desktop</module>
+        <module>bookcase-bookscrapers</module>
     </modules>
 
     <properties>
