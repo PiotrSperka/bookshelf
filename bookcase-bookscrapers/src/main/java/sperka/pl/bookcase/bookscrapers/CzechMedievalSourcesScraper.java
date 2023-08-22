@@ -8,7 +8,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jsoup.Jsoup;
+import sperka.pl.bookcase.bookscrapers.tools.DefaultJsoupDocumentLoader;
+import sperka.pl.bookcase.bookscrapers.tools.IDocumentLoader;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,17 +20,24 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class CzechMedievalSourcesScraper {
+    private final IDocumentLoader documentLoader;
 
-    private static int getMaxPage( String url ) throws IOException {
+    public CzechMedievalSourcesScraper() {
+        documentLoader = new DefaultJsoupDocumentLoader();
+    }
+
+    public CzechMedievalSourcesScraper( IDocumentLoader documentLoader ) {
+        this.documentLoader = documentLoader;
+    }
+
+    private int getMaxPage( String url ) throws IOException {
         try {
-            var doc = Jsoup.connect( url ).get();
+            var doc = documentLoader.load( url );
             var builder = new URIBuilder( doc.selectFirst( "i.fa-step-forward" ).parent().absUrl( "href" ) );
             var queryParams = builder.getQueryParams();
             var pageParam = queryParams.stream().filter( q -> q.getName().equals( "page" ) ).findFirst().orElseThrow();
 
-            // TODO:
-            return 5;
-//            return Integer.parseInt( pageParam.getValue() );
+            return Integer.parseInt( pageParam.getValue() );
         } catch ( URISyntaxException e ) {
             System.err.println( e.getMessage() );
         } catch ( NullPointerException e ) {
@@ -40,11 +48,11 @@ public class CzechMedievalSourcesScraper {
     }
 
     @Nullable
-    private static Image getPageImage( String bookUrl, int page ) {
+    private Image getPageImage( String bookUrl, int page ) {
         try {
             var builder = new URIBuilder( bookUrl );
             builder.setParameter( "page", Integer.toString( page ) );
-            var doc = Jsoup.connect( builder.toString() ).get();
+            var doc = documentLoader.load( builder.toString() );
             var img = doc.select( "img#page" ).first();
             if ( img != null ) {
                 return ImageIO.read( new URL( img.absUrl( "src" ) ) );
@@ -56,11 +64,11 @@ public class CzechMedievalSourcesScraper {
         return null;
     }
 
-    public static @NotNull String getBookTitle( String url ) throws IOException {
+    public @NotNull String getBookTitle( String url ) throws IOException {
         var title = "";
 
         try {
-            var doc = Jsoup.connect( url ).get();
+            var doc = documentLoader.load( url );
             var sideMenu = doc.selectFirst( "div#page_listing" ).html();
             title = sideMenu.split( "<br>" )[ 0 ].trim();
         } catch ( NullPointerException e ) {
@@ -70,7 +78,7 @@ public class CzechMedievalSourcesScraper {
         return title;
     }
 
-    public static @NotNull ByteArrayOutputStream getBookAsPdf( String url ) throws IOException {
+    public @NotNull ByteArrayOutputStream getBookAsPdf( String url ) throws IOException {
         var output = new ByteArrayOutputStream();
 
         try ( var pdf = new PDDocument() ) {
@@ -91,5 +99,4 @@ public class CzechMedievalSourcesScraper {
 
         return output;
     }
-
 }

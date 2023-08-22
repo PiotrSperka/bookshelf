@@ -75,8 +75,9 @@ public class BookScrapingServiceImpl implements BookScrapingService {
         job.setBookScrapingState( BookScrapingState.PROCESSING );
         bookScrapingJobRepository.save( job );
         try {
-            var title = CzechMedievalSourcesScraper.getBookTitle( job.getInputData() );
-            var pdf = CzechMedievalSourcesScraper.getBookAsPdf( job.getInputData() );
+            var scraper = new CzechMedievalSourcesScraper();
+            var title = scraper.getBookTitle( job.getInputData() );
+            var pdf = scraper.getBookAsPdf( job.getInputData() );
             var filename = Instant.now().toEpochMilli() + ".pdf";
             var filepath = Path.of( bookScrapingDirectory, filename ).toString();
 
