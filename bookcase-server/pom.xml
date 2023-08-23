@@ -4,7 +4,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>bookcase-server</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 
     <parent>
         <artifactId>bookcase</artifactId>
@@ -39,6 +39,11 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>sperka.pl</groupId>
+            <artifactId>bookcase-bookscrapers</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm</artifactId>

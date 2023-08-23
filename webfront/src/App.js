@@ -11,7 +11,7 @@ import { useUserContext } from "./UserContextProvider";
 import BooksDatabaseViewer from "./Components/BooksDataGrid/BooksDatabaseViewer";
 import ResetPassword from "./Components/Auth/ResetPassword";
 import RequestNewPassword from "./Components/Auth/RequestNewPassword";
-
+import BookScraping from "./Components/BookScraping/BookScraping";
 
 const App = () => {
     const intl = useIntl();
@@ -37,6 +37,7 @@ const App = () => {
                     { isLoggedIn() && <Route path="/">
                         <Route index={ true } element={ <BooksDatabaseViewer/> }/>
                         <Route path="user" element={ <UserAdmin/> }/>
+                        <Route path="book-scraping" element={ <BookScraping/> }/>
                         <Route path="admin" element={ <SystemAdmin/> }/>
                     </Route> }
                     <Route path="*" element={ <h2>404 :(</h2> }/>

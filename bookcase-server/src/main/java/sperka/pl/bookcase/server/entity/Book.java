@@ -1,16 +1,15 @@
 package sperka.pl.bookcase.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.ResultCheckStyle;
+import org.hibernate.annotations.SQLDelete;
 import sperka.pl.bookcase.server.dto.BookDto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
@@ -20,14 +19,16 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book implements IdProvider, Comparable<BookDto> {
+public class Book implements IdProvider, Comparable< BookDto > {
     @Id
     @SequenceGenerator( name = "bookSeq", sequenceName = "book_id_seq", allocationSize = 1 )
     @GeneratedValue( generator = "bookSeq" )
     private Long id;
 
+    @Column( length = 65535, columnDefinition = "Text" )
     private String author;
 
+    @Column( length = 65535, columnDefinition = "Text" )
     private String title;
 
     private String released;
