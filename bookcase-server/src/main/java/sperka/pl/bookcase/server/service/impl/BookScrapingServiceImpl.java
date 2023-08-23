@@ -1,10 +1,12 @@
 package sperka.pl.bookcase.server.service.impl;
 
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jetbrains.annotations.NotNull;
 import sperka.pl.bookcase.bookscrapers.CzechMedievalSourcesScraper;
 import sperka.pl.bookcase.server.dto.BookScrapingJobDto;
@@ -12,6 +14,7 @@ import sperka.pl.bookcase.server.entity.BookScrapingJob;
 import sperka.pl.bookcase.server.enums.BookScrapingState;
 import sperka.pl.bookcase.server.repository.BookScrapingJobRepository;
 import sperka.pl.bookcase.server.service.BookScrapingService;
+import sperka.pl.bookcase.server.service.LogService;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -27,12 +30,17 @@ import java.util.List;
 @ApplicationScoped
 public class BookScrapingServiceImpl implements BookScrapingService {
     private final BookScrapingJobRepository bookScrapingJobRepository;
+    private final LogService logService;
 
     private final String bookScrapingDirectory;
 
     @Inject
-    public BookScrapingServiceImpl( BookScrapingJobRepository bookScrapingJobRepository, @ConfigProperty( name = "application.bookscraper.directory", defaultValue = "" ) String bookScrapingDirectory ) {
+    ManagedExecutor managedExecutor;
+
+    @Inject
+    public BookScrapingServiceImpl( BookScrapingJobRepository bookScrapingJobRepository, LogService logService, @ConfigProperty( name = "application.bookscraper.directory", defaultValue = "" ) String bookScrapingDirectory ) {
         this.bookScrapingJobRepository = bookScrapingJobRepository;
+        this.logService = logService;
         this.bookScrapingDirectory = bookScrapingDirectory;
     }
 
@@ -67,13 +75,17 @@ public class BookScrapingServiceImpl implements BookScrapingService {
     void processJobs() {
         var jobs = bookScrapingJobRepository.getAll();
         if ( jobs.stream().noneMatch( j -> j.getBookScrapingState() == BookScrapingState.PROCESSING ) ) {
-            jobs.stream().filter( j -> j.getBookScrapingState() == BookScrapingState.QUEUED ).findAny().ifPresent( this::runBookScraping );
+            jobs.stream().filter( j -> j.getBookScrapingState() == BookScrapingState.QUEUED ).findAny().ifPresent( job -> managedExecutor.execute( () -> runBookScraping( job ) ) );
         }
     }
 
     private void runBookScraping( @NotNull BookScrapingJob job ) {
-        job.setBookScrapingState( BookScrapingState.PROCESSING );
-        bookScrapingJobRepository.save( job );
+        QuarkusTransaction.requiringNew().run( () -> {
+            job.setBookScrapingState( BookScrapingState.PROCESSING );
+            bookScrapingJobRepository.save( job );
+            logService.add( "Starting book scraping job: " + job.toDto().toString(), "system" );
+        } );
+
         try {
             var scraper = new CzechMedievalSourcesScraper();
             var title = scraper.getBookTitle( job.getInputData() );
@@ -87,11 +99,17 @@ public class BookScrapingServiceImpl implements BookScrapingService {
 
             job.setTitle( title.isBlank() ? filename : title );
             job.setFilePath( filepath );
-            job.setBookScrapingState( BookScrapingState.READY );
-            bookScrapingJobRepository.save( job );
+            QuarkusTransaction.requiringNew().run( () -> {
+                job.setBookScrapingState( BookScrapingState.READY );
+                bookScrapingJobRepository.save( job );
+                logService.add( "Finished book scraping job id = " + job.getId(), "system" );
+            } );
         } catch ( IOException ex ) {
-            job.setBookScrapingState( BookScrapingState.ERROR );
-            bookScrapingJobRepository.save( job );
+            QuarkusTransaction.requiringNew().run( () -> {
+                job.setBookScrapingState( BookScrapingState.ERROR );
+                bookScrapingJobRepository.save( job );
+                logService.add( "Exception during book scraping job id = " + job.getId() + ". " + ex, "system" );
+            } );
         }
     }
 
