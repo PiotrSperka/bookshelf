@@ -22,6 +22,8 @@ Create `application.properties` file and set configuration:
 # Put here your application URL
 application.url=http://127.0.0.1:8080
 application.password.secret=put-here-random-32-characters
+# Book scraper downloads directory
+application.bookscraper.directory=books
 
 # Database configuration - update to your needs
 quarkus.datasource.db-kind=mariadb
@@ -96,6 +98,10 @@ services:
 Start the container by running `docker-compose up -d` from `bookshelf` directory.
 
 ## Changelog
+
+### v1.0.5
+* Add book scraping from sources.cms.flu.cas.cz
+* Minor UI improvements
 
 ### v1.0.4
 * Updated to Quarkus 3.0.4.Final
