@@ -12,6 +12,7 @@ import sperka.pl.bookcase.server.dto.GenericResponseDto;
 import sperka.pl.bookcase.server.entity.BookScrapingJob;
 import sperka.pl.bookcase.server.service.BookScrapingService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 @ApplicationScoped
@@ -45,16 +46,16 @@ public class BookScrapingResource {
 
     @GET
     @Path( "/result/{id}" )
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces( MediaType.APPLICATION_OCTET_STREAM )
     public Response getResultFile( @PathParam( "id" ) Long id ) throws IOException {
         if ( id != null ) {
-            var data = new byte[0];
-            try (var resultStream = bookScrapingService.getFile( id )) {
-                data = resultStream.readAllBytes();
+            var file = bookScrapingService.getFile( id );
+
+            if ( file.exists() && file.isFile() && file.canRead() ) {
+                return Response.ok( new FileInputStream( file ) )
+                        .header( "Content-Length", file.length() )
+                        .build();
             }
-            return Response.ok( data )
-                    .header( "Content-Length", data.length )
-                    .build();
         }
 
         return Response.status( Response.Status.BAD_REQUEST ).build();

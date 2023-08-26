@@ -16,13 +16,10 @@ import sperka.pl.bookcase.server.repository.BookScrapingJobRepository;
 import sperka.pl.bookcase.server.service.BookScrapingService;
 import sperka.pl.bookcase.server.service.LogService;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -59,14 +56,14 @@ public class BookScrapingServiceImpl implements BookScrapingService {
     }
 
     @Override
-    public InputStream getFile( long id ) throws IOException {
+    public File getFile( long id ) throws IOException {
         var job = bookScrapingJobRepository.getById( id );
 
         if ( job != null && job.getBookScrapingState() == BookScrapingState.READY ) {
-            return Files.newInputStream( Path.of( job.getFilePath() ), StandardOpenOption.READ );
+            return new File( job.getFilePath() );
         }
 
-        return new ByteArrayInputStream( new byte[ 0 ] );
+        throw new IOException( "Cannot open file related to job id = " + id );
     }
 
     // TODO: notification instead of polling

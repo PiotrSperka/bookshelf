@@ -100,10 +100,13 @@ Start the container by running `docker-compose up -d` from `bookshelf` directory
 ## Changelog
 
 ### v1.0.6
-* Add download progress bar to scraped book download
+* Added download progress bar to scraped book download
+* Removed deprecated and unused projects
+* Updated to Quarkus 3.3.0
+* Improved scraped books download method
 
 ### v1.0.5
-* Add book scraping from sources.cms.flu.cas.cz
+* Added book scraping from sources.cms.flu.cas.cz
 * Minor UI improvements
 
 ### v1.0.4
