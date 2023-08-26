@@ -1,5 +1,5 @@
 import { Box, Button, Chip } from "@mui/material";
-import styles from "../Admin/UsersGrid.module.css";
+import styles from "./ScrapedBooksGrid.module.css";
 import { DataGrid, enUS, plPL } from "@mui/x-data-grid";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { useApi } from "../../Services/GenericServiceHook";
 import { getAllJobsParams, getDownloadResultParams } from "../../Services/BookScrapingApi";
 import { useUserContext } from "../../UserContextProvider";
 import DownloadIcon from "@mui/icons-material/Download";
+import CircularProgressWithLabel from "../CircularProgressWithLabel";
 
 const ScrapedBooksGrid = props => {
     const intl = useIntl();
@@ -16,6 +17,7 @@ const ScrapedBooksGrid = props => {
     const [ jobs, setJobs ] = useState( [] );
     const [ downloadTitle, setDownloadTitle ] = useState( "" );
     const [ isLoading, setIsLoading ] = useState( false );
+    const [ downloadProgress, setDownloadProgress ] = useState( 24 );
 
     const locale = navigator.language.split( /[-_]/ )[ 0 ];
     const dataGridLocalization = locale === 'pl' ? plPL.components.MuiDataGrid.defaultProps.localeText : enUS.components.MuiDataGrid.defaultProps.localeText;
@@ -54,6 +56,7 @@ const ScrapedBooksGrid = props => {
             const onClick = () => {
                 setDownloadTitle( params.row[ "title" ] )
                 setIsLoading( true )
+                setDownloadProgress( 0 )
                 getResultApi.request( getDownloadResultParams( params.row[ "id" ] ) )
             }
             return ( params.row[ "bookScrapingState" ] === "READY" &&
@@ -87,8 +90,39 @@ const ScrapedBooksGrid = props => {
     }, [ getJobsApi.data ] );
 
     useEffect( () => {
-        if ( getResultApi.data ) {
-            getResultApi.data.blob().then( blob => {
+        if ( getResultApi.data && !getResultApi.data.body.locked ) {
+            const contentEncoding = getResultApi.data.headers.get( 'content-encoding' );
+            let contentLength = getResultApi.data.headers.get( contentEncoding ? 'x-file-size' : 'content-length' );
+            if ( contentLength === null ) {
+                contentLength = -1;
+            }
+
+            const total = parseInt( contentLength, 10 );
+            let loaded = 0;
+            new Response(
+                new ReadableStream( {
+                    start( controller ) {
+                        const reader = getResultApi.data.body.getReader();
+                        read();
+
+                        function read() {
+                            reader.read().then( ( { done, value } ) => {
+                                if ( done ) {
+                                    controller.close();
+                                    return;
+                                }
+                                loaded += value.byteLength;
+                                setDownloadProgress( Math.round( loaded / total * 100 ) );
+                                controller.enqueue( value );
+                                read();
+                            } ).catch( error => {
+                                console.error( error );
+                                controller.error( error )
+                            } )
+                        }
+                    }
+                } )
+            ).blob().then( blob => {
                 const objectURL = URL.createObjectURL( blob );
                 const tempLink = document.createElement( 'a' );
                 tempLink.href = objectURL;
@@ -103,11 +137,20 @@ const ScrapedBooksGrid = props => {
         }
     }, [ getResultApi.data ] );
 
+    const customLoader = props => {
+        return (
+            <Box className={ styles.progressOverlay }>
+                <CircularProgressWithLabel value={ props.progress }/>
+            </Box>
+        )
+    }
+
     return (
         <Box>
             <DataGrid className={ styles.dataGrid } columns={ cols } rows={ jobs } autoHeight={ true }
                       localeText={ dataGridLocalization } disableColumnMenu={ true } loading={ isLoading }
-                      rowCount={ jobs.length } getRowId={ ( row ) => row.id }/>
+                      rowCount={ jobs.length } getRowId={ ( row ) => row.id } slots={ { loadingOverlay: customLoader } }
+                      slotProps={ { loadingOverlay: { progress: downloadProgress } } }/>
         </Box>
     )
 }

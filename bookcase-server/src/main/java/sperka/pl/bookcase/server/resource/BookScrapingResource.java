@@ -13,7 +13,6 @@ import sperka.pl.bookcase.server.entity.BookScrapingJob;
 import sperka.pl.bookcase.server.service.BookScrapingService;
 
 import java.io.IOException;
-import java.net.URLConnection;
 
 @ApplicationScoped
 @Path( "/api/bookscraping" )
@@ -46,11 +45,15 @@ public class BookScrapingResource {
 
     @GET
     @Path( "/result/{id}" )
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getResultFile( @PathParam( "id" ) Long id ) throws IOException {
         if ( id != null ) {
-            var resultStream = bookScrapingService.getFile( id );
-            return Response.ok( resultStream )
-                    .type( URLConnection.guessContentTypeFromStream( resultStream ) )
+            var data = new byte[0];
+            try (var resultStream = bookScrapingService.getFile( id )) {
+                data = resultStream.readAllBytes();
+            }
+            return Response.ok( data )
+                    .header( "Content-Length", data.length )
                     .build();
         }
 

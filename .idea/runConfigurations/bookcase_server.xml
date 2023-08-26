@@ -1,13 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="bookcase-server" type="QuarkusRunConfigurationType" factoryName="Quarkus" nameIsGenerated="true">
     <module name="bookcase-server" />
-    <QsMavenRunConfiguration>
+    <bookcase-server>
       <MavenSettings>
         <option name="myGeneralSettings" />
         <option name="myRunnerSettings" />
         <option name="myRunnerParameters">
           <MavenRunnerParameters>
-            <option name="cmdOptions" value="-Dapplication.password.secret=&quot;E(H+MbQeThWmZq4t7w9z$C&amp;F)J@NcRfU&quot;" />
+            <option name="cmdOptions" />
             <option name="profiles">
               <set />
             </option>
@@ -30,7 +30,7 @@
       </MavenSettings>
       <targetMavenLocalRepo />
       <emulateTerminal>true</emulateTerminal>
-    </QsMavenRunConfiguration>
+    </bookcase-server>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

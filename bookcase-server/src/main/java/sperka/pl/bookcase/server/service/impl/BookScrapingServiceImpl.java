@@ -110,6 +110,8 @@ public class BookScrapingServiceImpl implements BookScrapingService {
                 bookScrapingJobRepository.save( job );
                 logService.add( "Exception during book scraping job id = " + job.getId() + ". " + ex, "system" );
             } );
+        } finally {
+            System.gc();
         }
     }
 
