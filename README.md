@@ -99,6 +99,9 @@ Start the container by running `docker-compose up -d` from `bookshelf` directory
 
 ## Changelog
 
+### v1.0.6
+* Add download progress bar to scraped book download
+
 ### v1.0.5
 * Add book scraping from sources.cms.flu.cas.cz
 * Minor UI improvements
